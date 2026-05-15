@@ -1,0 +1,47 @@
+# Citation File Format v1.2.0 — see https://citation-file-format.github.io/
+# Placeholders use <<KEY>> syntax (not Jinja {{KEY}}) to keep raw YAML parseable
+# during validation. Substitute with `bootstrap_project.py` or by hand.
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: <<TYPE>>  # software | dataset | book | article — pick one
+title: "<<TITLE>>"
+abstract: "<<ABSTRACT>>"
+
+# Authors — for SKIE pseudonym projects, list only the pseudonym.
+# Per rules/publishing.md, never insert real-name metadata. Real ORCID
+# is acceptable ONLY if it is publicly bound to the SKIE pseudonym; otherwise omit.
+authors:
+  - name: SKIE
+    # orcid: https://orcid.org/<<ORCID>>  # uncomment only if pseudonym-bound
+
+# Versioning per Semantic Versioning 2.0.0 (https://semver.org/).
+# date-released is the ISO 8601 calendar date of the corresponding git tag.
+version: "<<VERSION>>"
+date-released: "<<DATE>>"
+url: "<<URL>>"
+repository-code: "<<REPO_URL>>"
+license: <<LICENSE_SPDX>>  # SPDX identifier, e.g. MIT, Apache-2.0, CC-BY-4.0
+
+keywords:
+  - <<KEYWORD1>>
+  - <<KEYWORD2>>
+
+# Zenodo-minted concept DOI; leave the placeholder until the first Zenodo
+# release. Per rules/publishing.md SKIE workflow, each release tagged
+# `skie-v{MAJOR.MINOR}` gets a fresh DOI under the concept DOI.
+doi: <<DOI>>
+
+# Optional: preferred citation if the work has a canonical published form
+# (manuscript, paper). Comment out the block if not applicable.
+preferred-citation:
+  type: <<CITE_TYPE>>  # article | conference-paper | thesis | etc.
+  authors:
+    - name: SKIE
+  title: "<<CITE_TITLE>>"
+  year: <<CITE_YEAR>>
+  journal: "<<CITE_JOURNAL>>"
+  doi: <<CITE_DOI>>
+
+# References — auto-populated by /cite-add (R1-C); each entry must conform
+# to CFF v1.2.0 reference schema. Start empty.
+references: []
