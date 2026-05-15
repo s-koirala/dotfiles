@@ -50,7 +50,14 @@ import sys
 import tempfile
 from pathlib import Path, PurePosixPath
 
-_SCRIPT_VERSION = "0.1.0"  # SemVer 2.0.0; bump on template or layout change
+_SCRIPT_VERSION = "0.2.0"  # SemVer 2.0.0; bump on template or layout change
+# 0.2.0: R2-B2 — added template rendering (12 .tmpl files)
+# 0.1.0: R2-B1 — initial CLI + dir tree + manifest
+
+# Bootstrap template source dir (relative to this script)
+_TEMPLATE_DIR = Path(__file__).resolve().parent / "bootstrap_templates"
+# Shared template dir (used by R1-C, R1-D, etc.)
+_SHARED_TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 
 # Subdirs created for all --kind variants. Order matches docs/audits/
 # implementation_plan_dotfiles_additions_2026-05-15.md §A.3 (memo) and
@@ -247,12 +254,156 @@ def build_dir_tree(project_root: Path, kind: str, dry_run: bool = False) -> list
     return subdirs
 
 
+def render_template(
+    template_path: Path,
+    ctx: dict[str, str],
+) -> str:
+    """Substitute <<KEY>> placeholders with ctx[KEY]. Unknown placeholders
+    pass through unchanged (preserves <<TODO: ...>> guidance markers in
+    rendered bodies)."""
+    text = template_path.read_text(encoding="utf-8")
+    for key, val in ctx.items():
+        text = text.replace(f"<<{key}>>", val)
+    return text
+
+
+def template_files_for(kind: str) -> list[tuple[str, str]]:
+    """Return list of (template_name, target_relative_path) for the kind.
+
+    Always-emitted (8 files) plus kind-specific extras (1-2 files).
+    """
+    always = [
+        ("CLAUDE.md.tmpl", "CLAUDE.md"),
+        ("README.md.tmpl", "README.md"),
+        ("CHANGELOG.md.tmpl", "CHANGELOG.md"),
+        ("LICENSE.tmpl", "LICENSE"),
+        (".gitignore.tmpl", ".gitignore"),
+        (".gitattributes.tmpl", ".gitattributes"),
+        ("pyproject.toml.tmpl", "pyproject.toml"),
+        (".pre-commit-config.yaml.tmpl", ".pre-commit-config.yaml"),
+    ]
+    if kind == "quant":
+        always.append(("hypothesis_backlog.md.tmpl", "hypothesis_backlog.md"))
+    elif kind == "epi":
+        always.append(("protocol_v0.md.tmpl", "docs/protocol/protocol_v0.md"))
+    elif kind == "publishing":
+        always.append(("manuscript.md.tmpl", "manuscript/manuscript.md"))
+        always.append(("ai_assistance_statement.md.tmpl", "docs/ai_assistance_statement.md"))
+    return always
+
+
+def render_all_templates(
+    project_root: Path,
+    kind: str,
+    name: str,
+    python_version: str,
+    user_email: str | None,
+    description: str = "",
+) -> dict[str, str]:
+    """Render every template; write to target path; return {target: sha256}.
+
+    Skips files that already exist (preserves user edits across re-runs).
+    Returns the SHA-256 map for the manifest's `files` field.
+    """
+    head = script_git_head()
+    date = dt.date.today().isoformat()
+    year = str(dt.date.today().year)
+    rules_file = _KIND_RULES[kind] or "(none — generic kind)"
+    license_id = "MIT"  # default; CC-BY-4.0 for publishing handled separately if needed
+    author = user_email.split("@")[0] if user_email else "<<TODO: author>>"
+
+    scope_text = {
+        "quant": "Quant research project. Hypothesis-driven; pre-registered design.md per hypothesis; "
+                 "walk-forward backtest with purge + embargo; Hansen SPA gate over the strategy family.",
+        "epi": "Population-health research project. STROBE/CONSORT/STARD/TRIPOD reporting per study "
+               "design; DAG-driven adjustment-set selection; E-value sensitivity per primary causal estimate.",
+        "publishing": "Publication artifact under SKIE pseudonym. ICMJE-compliant AI-assistance disclosure; "
+                      "Zenodo DOI minted on release; identity hygiene enforced.",
+        "generic": "Generic research/scratch project. No kind-specific rules activate; user-global "
+                   "rules from ~/.claude/CLAUDE.md still apply.",
+    }[kind]
+
+    reporting_standard = {
+        "epi": "STROBE",  # user can change in protocol_v0.md
+    }.get(kind, "")
+
+    ctx = {
+        "NAME": name,
+        "DESCRIPTION": description or f"{name} ({kind} project bootstrapped from s-koirala/dotfiles)",
+        "KIND": kind,
+        "DATE": date,
+        "YEAR": year,
+        "RULES_FILE": rules_file,
+        "PYTHON_VERSION": python_version,
+        "BOOTSTRAP_SCRIPT_HEAD": head[:12] if head != "unknown" else "unknown",
+        "LICENSE": license_id,
+        "AUTHOR": author,
+        "SCOPE_DESCRIPTION": scope_text,
+        "REPORTING_STANDARD": reporting_standard,
+        "DOTFILES": str(Path.home() / ".claude").replace("\\", "/"),
+        "HYPOTHESIS_ROWS": "| H001 | 1 | <<TODO>> | designed | <<DOI>> | seed hypothesis |",
+        "MODEL_ID": "claude-opus-4-7",
+        "MODEL_VERSION": "claude-opus-4-7",
+        "ROLE": "<<TODO: idea | code | prose | audit | multi>>",
+    }
+
+    file_shas: dict[str, str] = {}
+    for tmpl_name, target_rel in template_files_for(kind):
+        # Resolve template source (bootstrap_templates/ first; fall back to shared templates/)
+        src = _TEMPLATE_DIR / tmpl_name
+        if not src.exists():
+            src = _SHARED_TEMPLATE_DIR / tmpl_name.removesuffix(".tmpl")
+        if not src.exists():
+            print(f"WARN: template not found: {tmpl_name}", file=sys.stderr)
+            continue
+
+        target = project_root / target_rel
+        if target.exists():
+            # Preserve user edits; record current SHA but do not overwrite
+            file_shas[target_rel] = hashlib.sha256(target.read_bytes()).hexdigest()
+            continue
+
+        rendered = render_template(src, ctx)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(rendered, encoding="utf-8")
+        file_shas[target_rel] = hashlib.sha256(rendered.encode("utf-8")).hexdigest()
+
+    # Also emit CITATION.cff from the shared template (R1-C)
+    cff_src = _SHARED_TEMPLATE_DIR / "CITATION.cff.tmpl"
+    cff_target = project_root / "CITATION.cff"
+    if cff_src.exists() and not cff_target.exists():
+        rendered = render_template(cff_src, {
+            **ctx,
+            "TITLE": name,
+            "TYPE": "software",
+            "ABSTRACT": ctx["DESCRIPTION"],
+            "VERSION": "0.0.1",
+            "URL": f"https://github.com/s-koirala/{name}",
+            "REPO_URL": f"https://github.com/s-koirala/{name}",
+            "LICENSE_SPDX": license_id,
+            "KEYWORD1": kind,
+            "KEYWORD2": "research",
+            "DOI": "<<TODO: Zenodo concept DOI on first release>>",
+            "ORCID": "<<TODO: pseudonym-bound ORCID or omit>>",
+            "CITE_TYPE": "article",
+            "CITE_TITLE": "<<TODO>>",
+            "CITE_YEAR": year,
+            "CITE_JOURNAL": "<<TODO>>",
+            "CITE_DOI": "<<TODO>>",
+        })
+        cff_target.write_text(rendered, encoding="utf-8")
+        file_shas["CITATION.cff"] = hashlib.sha256(rendered.encode("utf-8")).hexdigest()
+
+    return file_shas
+
+
 def build_manifest(
     project_root: Path,
     kind: str,
     python_version: str,
     venv_created: bool,
     subdirs: list[str],
+    file_shas: dict[str, str] | None = None,
 ) -> dict:
     """Compose the manifest.json payload."""
     now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
@@ -267,7 +418,7 @@ def build_manifest(
         "timestamp_utc": now,
         "subdirs": sorted(subdirs),
         "subdir_listing_sha256": sha256_dir_listing(project_root),
-        "files": {},  # populated in R2-B2 with per-template SHA-256
+        "files": file_shas or {},
     }
 
 
@@ -436,12 +587,22 @@ def main(argv: list[str]) -> int:
         if args.venv:
             venv_created = maybe_run_uv_venv(project_root, python_version)
 
+        # R2-B2: render templates
+        file_shas = render_all_templates(
+            project_root=project_root,
+            kind=args.kind,
+            name=args.name,
+            python_version=python_version,
+            user_email=args.user_email,
+        )
+
         manifest = build_manifest(
             project_root=project_root,
             kind=args.kind,
             python_version=python_version,
             venv_created=venv_created,
             subdirs=subdirs,
+            file_shas=file_shas,
         )
         atomic_write_json(project_root / "manifest.json", manifest)
 
@@ -464,10 +625,9 @@ def main(argv: list[str]) -> int:
     print(f"  kind={args.kind}, python={python_version}, "
           f"venv={'created' if venv_created else 'skipped'}, "
           f"commit={commit_status}")
-    print(f"  manifest: {project_root}/manifest.json")
+    print(f"  manifest: {project_root}/manifest.json "
+          f"({len(manifest['files'])} tracked file(s))")
     print(f"  bootstrap_script_git_head: {script_head[:12]}")
-    print(f"  R2-B2 (template rendering) is a separate item; this build "
-          f"creates dir tree + manifest only.")
     return 0
 
 

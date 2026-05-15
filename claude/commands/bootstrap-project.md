@@ -7,7 +7,7 @@ Run the bootstrap script with $ARGUMENTS:
 
     python ~/.claude/scripts/bootstrap_project.py $ARGUMENTS
 
-R2-B1 phase (current): creates the directory tree and writes `manifest.json`. Top-level files (CLAUDE.md, README.md, CHANGELOG.md, CITATION.cff, etc.) are NOT yet templated — that is R2-B2.
+Renders the directory tree, writes `manifest.json`, and renders ~10 top-level files from templates: `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `LICENSE`, `pyproject.toml`, `.gitignore`, `.gitattributes`, `.pre-commit-config.yaml`, `CITATION.cff`, plus kind-specific (`hypothesis_backlog.md` for quant; `docs/protocol/protocol_v0.md` for epi; `manuscript/manuscript.md` + `docs/ai_assistance_statement.md` for publishing).
 
 Behavior:
 - Creates `<path>/<name>/` with ~24 base subdirs + kind-conditional extras (e.g. `research/01_hypothesis_register/` for quant, `docs/protocol/` for epi, `manuscript/` for publishing). Both `runs/` AND `artifacts/runs/` are emitted (SKIE-Universe has both as siblings).
