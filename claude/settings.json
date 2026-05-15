@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"C:/Users/skoir/.claude/hooks/session_start_provenance.py\""
+            "command": "python \"{{CLAUDE_HOME}}/hooks/session_start_provenance.py\""
           }
         ]
       }
@@ -47,11 +47,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"C:/Users/skoir/.claude/hooks/pre_write_seed_guard.py\""
+            "command": "python \"{{CLAUDE_HOME}}/hooks/pre_write_seed_guard.py\""
           },
           {
             "type": "command",
-            "command": "python \"C:/Users/skoir/.claude/hooks/pre_write_phi_guard.py\""
+            "command": "python \"{{CLAUDE_HOME}}/hooks/pre_write_phi_guard.py\""
           }
         ]
       },
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"C:/Users/skoir/.claude/hooks/pre_bash_safety.py\""
+            "command": "python \"{{CLAUDE_HOME}}/hooks/pre_bash_safety.py\""
           }
         ]
       }
@@ -71,7 +71,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"C:/Users/skoir/.claude/hooks/post_write_notebook_clean.py\""
+            "command": "python \"{{CLAUDE_HOME}}/hooks/post_write_notebook_clean.py\""
           }
         ]
       }
@@ -81,7 +81,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"C:/Users/skoir/.claude/hooks/session_end_audit_log.py\""
+            "command": "python \"{{CLAUDE_HOME}}/hooks/session_end_audit_log.py\""
           }
         ]
       }
