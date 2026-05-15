@@ -22,7 +22,7 @@ Write one sentence: estimand, target population, unit of analysis, comparison. I
 ### 3. Select method from assumption fit, not convention
 Map verified assumptions → method. Examples:
 - Non-normal + small n → bootstrap CI or exact permutation test, not t-test.
-- Autocorrelation → HAC/Newey-West SE or block bootstrap, not iid SE.
+- Autocorrelation → HAC/Newey-West SE with data-dependent bandwidth ([Newey & West 1994](https://doi.org/10.2307/2297912)) or Andrews 1991 plug-in ([Andrews 1991](https://doi.org/10.2307/2938229)); use `statsmodels.stats.sandwich_covariance.cov_hac` with `nlags='auto'`. For block bootstrap on serially-correlated returns, use the stationary bootstrap ([Politis & Romano 1994](https://doi.org/10.1080/01621459.1994.10476870)) with automatic block-length selection ([Politis & White 2004](https://doi.org/10.1081/ETC-120028836)); implementation: `arch.bootstrap.StationaryBootstrap`. **No KPI-specific decision tree is inlined here** — Sharpe-CI methodology stays in [rules/quant-project.md](../../rules/quant-project.md), cwd-scoped to quant projects.
 - Heteroskedastic → HC3 for small n (MacKinnon & White 1985), not HC0.
 - Multiple comparisons → Benjamini-Hochberg FDR unless family-wise control is required (then Holm).
 - Changepoint → PELT ([Killick, Fearnhead, Eckley 2012, JASA 107:1590](https://arxiv.org/abs/1101.1438)) with penalty selected via CROPS ([Haynes, Eckley, Fearnhead 2017, JCGS 26:134](https://doi.org/10.1080/10618600.2015.1116445)) or BIC-bootstrap.
@@ -56,3 +56,7 @@ After completion, invoke `audit-remediate-loop` with `target=statistical-analysi
 - Benjamini & Hochberg (1995) *JRSS-B* — FDR.
 - Efron & Tibshirani (1993) — bootstrap.
 - Giacomini & White (2006) *Econometrica* — conditional forecast comparison.
+- Newey & West (1994) *Rev Econ Stud* 61(4):631 — HAC bandwidth data-dependent selection. https://doi.org/10.2307/2297912
+- Andrews (1991) *Econometrica* 59(3):817 — HAC plug-in bandwidth. https://doi.org/10.2307/2938229
+- Politis & Romano (1994) *J Am Stat Assoc* 89(428):1303 — stationary bootstrap. https://doi.org/10.1080/01621459.1994.10476870
+- Politis & White (2004) *Econometric Rev* 23(1):53 — automatic block-length selector for the stationary bootstrap. https://doi.org/10.1081/ETC-120028836
