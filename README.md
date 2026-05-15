@@ -54,14 +54,5 @@ claude/                       # Claude Code user-level config (→ ~/.claude/)
 └── templates/                # 12 reusable templates (manuscript ref.docx, ADR, etc.)
 ```
 
-## Identity
-
-`s-koirala` (this GitHub handle) is the real account. **SKIE** is a pseudonym used for publishing manuscripts and Zenodo deposits under [`claude/rules/publishing.md`](claude/rules/publishing.md). Commits use `s-koirala@users.noreply.github.com` (GitHub privacy form); the real email never enters commit metadata. Per the local-only `memory/feedback_identity_hygiene_dotfiles.md` (gitignored; not in this repo), commits to anything under publishing-rule cwds must use the SKIE pseudonym local git config.
-
-## License
-
-License file pending. Until added, content is released under MIT-equivalent terms by the account holder for personal-use / educational fork; no warranty.
-
-## AI-assistance disclosure
 
 Per [ICMJE Recommendations (January 2026)](https://www.icmje.org/recommendations/): `claude-opus-4-7` contributed in roles `idea`, `code`, `prose`, `audit` to the R0–R3 implementation arc (commit count varies as work continues; full audit trail under [`claude/docs/audits/`](claude/docs/audits/) — 14 audit_trail files plus implementation_plan + research_memo, 16 files total). AI is acknowledged as a tool, not an author.
