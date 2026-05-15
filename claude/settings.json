@@ -48,6 +48,10 @@
           {
             "type": "command",
             "command": "python \"C:/Users/skoir/.claude/hooks/pre_write_seed_guard.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"C:/Users/skoir/.claude/hooks/pre_write_phi_guard.py\""
           }
         ]
       },
