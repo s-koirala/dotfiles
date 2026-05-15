@@ -1,0 +1,29 @@
+# Multiple-testing family register
+# Per ~/.claude/skills/multipletest-gate/SKILL.md and rules/quant-project.md.
+# Append-only. Each new hypothesis run within the family gets a row.
+
+family_id: <<TODO: unique identifier; e.g., 'main_strategy_universe' or 'arrythmia_study'>>
+created: <<DATE>>  # ISO 8601 calendar date
+description: <<TODO: 1-2 sentence scope of this family>>
+
+# Correction method — pre-registered. Choose one. Do not modify post-hoc.
+correction_method: <<TODO: hansen_spa | white_rc | bh_fdr | holm>>  # justify: pre-registered per design.md §8
+
+# Family-wise alpha — pre-registered. Do not modify post-hoc.
+alpha_FWE: <<TODO: 0.05 typical>>  # justify: pre-registered per design.md §8; if deviating, cite rationale
+
+# Bootstrap resample count for SPA / White Reality Check.
+# Default 1000 matches Hansen 2005 and Politis-Romano 1994 canonical.
+n_boot: 1000  # justify: Hansen 2005 default; matches Politis-Romano stationary-bootstrap reference
+
+# Hypothesis register — append-only.
+hypotheses: []
+  # - hid: H001
+  #   title: <<title>>
+  #   raw_p: <<p-value>>
+  #   corrected_p: <<after gate>>
+  #   sample_size: <<n>>
+  #   test_statistic: <<which method this row tested via>>
+  #   registered_at: <<ISO 8601 datetime>>
+  #   status: <pending | passed | rejected | archived>
+  #   notes: <<free-text>>
