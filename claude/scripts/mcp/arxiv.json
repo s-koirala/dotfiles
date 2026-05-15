@@ -1,0 +1,10 @@
+{
+  "name": "arxiv",
+  "transport": "stdio",
+  "command": "uvx",
+  "args": ["arxiv-mcp-server"],
+  "_source": "https://pypi.org/project/arxiv-mcp-server/ (blazickjp/arxiv-mcp-server)",
+  "_register": "claude mcp add --transport stdio --scope user arxiv -- uvx arxiv-mcp-server",
+  "_purpose": "Literature search + paper fetch for the literature-check agent.",
+  "_pin_note": "For full reproducibility pin a version: uvx arxiv-mcp-server==<version>"
+}

@@ -1,0 +1,8 @@
+- id: seed-guard
+  name: "seed/magic-number guard (reads argv)"
+  description: "Block commits that add unseeded RNG calls or unjustified magic numbers."
+  entry: python hooks/precommit_seed_guard.py
+  language: system
+  files: \.(py|ipynb)$
+  types_or: [python, jupyter]
+  pass_filenames: true

@@ -1,0 +1,10 @@
+{
+  "name": "filesystem",
+  "transport": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "<ALLOWED_ROOT_1>", "<ALLOWED_ROOT_2>"],
+  "_source": "https://www.npmjs.com/package/@modelcontextprotocol/server-filesystem (official)",
+  "_register": "claude mcp add --transport stdio --scope user filesystem -- npx -y @modelcontextprotocol/server-filesystem <ALLOWED_ROOT_1>",
+  "_purpose": "Scoped filesystem access outside the project cwd. Replace <ALLOWED_ROOT_*> with absolute paths.",
+  "_warning": "Each allowed root is read/write for the agent. Principle of least privilege — list only what is strictly needed. Never include ~/.ssh or credential dirs."
+}

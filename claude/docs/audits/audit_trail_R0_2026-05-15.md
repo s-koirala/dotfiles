@@ -27,7 +27,7 @@ exit_reason: verification gate passed; no critical findings possible at this sco
 - **Author:** `s-koirala <s-koirala@users.noreply.github.com>`
 - **Files tracked:** 26 (agents/, commands/, hooks/, rules/, skills/, docs/, CLAUDE.md, Bootstrap_Directive.md, settings.json, .gitignore)
 - **Sensitive files in tree:** 0
-- **Real email `skoirala2625@gmail.com` in any commit metadata:** 0 occurrences
+- **Real email `<real-email pattern; see memory/feedback_identity_hygiene_dotfiles.md (gitignored)>` in any commit metadata:** 0 occurrences
 
 ## Verification gate — all passed
 

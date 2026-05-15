@@ -1,0 +1,10 @@
+{
+  "name": "zenodo",
+  "_status": "planned",
+  "_source": "no canonical package identified on PyPI as of 2026-04-14; do not register until one is chosen or authored in this repo",
+  "_purpose": "Query and mint DOIs for Project SKIE publications.",
+  "_alternatives": [
+    "Use Zenodo REST API directly via a thin Python wrapper checked into this repo under scripts/mcp/zenodo_server/.",
+    "Evaluate community MCPs by searching https://api.anthropic.com/mcp-registry/v0/servers first."
+  ]
+}

@@ -42,7 +42,7 @@ By [audit-remediate-loop](../skills/audit-remediate-loop/SKILL.md) for any artif
 
 | Severity | Pattern | Example |
 |---|---|---|
-| critical | Real-name email or strings in committed file under publishing-cwd or in `~/.claude/` | `skoirala2625@gmail.com` (real email per memory feedback); first/last name strings |
+| critical | Real-name email or strings in committed file under publishing-cwd or in `~/.claude/` | `<real-email pattern; see memory/feedback_identity_hygiene_dotfiles.md (gitignored)>` (real email per memory feedback); first/last name strings |
 | critical | Unsubstituted `<<KEY>>` in a rendered (non-template) file | `name: <<NAME>>` left in a deployed CLAUDE.md |
 | major | Numeric literal in production code without `# justify:` / `# cv:` / `# ref:` / upstream empirical anchor | `n_perm = 1000` with no comment |
 | major | Magic threshold in YAML config without inline comment | `alpha: 0.05` with no comment |

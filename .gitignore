@@ -1,0 +1,7 @@
+# Machine-local Claude Code overrides — never commit
+claude/scripts/logs/
+claude/settings.local.json
+**/.credentials.json
+**/__pycache__/
+*.pyc
+.DS_Store

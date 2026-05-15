@@ -1,0 +1,31 @@
+# Pre-commit config for downstream research projects.
+#
+# To use from a project, reference this repo in that project's .pre-commit-config.yaml:
+#   repos:
+#     - repo: https://github.com/<user>/dotfiles
+#       rev: <commit-sha-or-tag>
+#       hooks:
+#         - id: seed-guard
+#     - repo: https://github.com/kynan/nbstripout
+#       rev: 0.7.1
+#       hooks: [{id: nbstripout}]
+#     - repo: https://github.com/astral-sh/ruff-pre-commit
+#       rev: v0.5.0
+#       hooks:
+#         - id: ruff
+#           args: [--fix]
+#         - id: ruff-format
+#
+# This file enforces those same hooks on the dotfiles repo itself.
+repos:
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.7.1
+    hooks:
+      - id: nbstripout
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
