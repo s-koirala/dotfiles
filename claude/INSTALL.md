@@ -2,11 +2,13 @@
 
 User-level Claude Code configuration for an independent researcher working
 across finance + financial markets, population science + public health,
-statistics + biostatistics, and app development. See the top-level
-[README](../README.md) for the per-domain scope breakdown and the cwd-glob
-rule activation table. This file is the installation procedure.
+statistics + biostatistics, and reproducible-research app development.
+The scope is research-tooling-flavored — general web/API/deployment work is
+not covered by domain skills here (use base Claude Code capability for that).
+See the top-level [README](../README.md) for the per-domain scope breakdown
+and the cwd-glob rule activation table. This file is the installation procedure.
 
-Deploys 9 skills, 10 slash commands, 7 agents, 8 hooks, 6 scripts, and 24
+Deploys 14 skills, 10 slash commands, 7 agents, 8 hooks, 6 scripts, and 24
 templates (12 in `templates/` + 12 in `scripts/bootstrap_templates/`) into
 `~/.claude/` on Windows, macOS, or Linux via an idempotent Python script.
 
@@ -132,7 +134,7 @@ human.
 
 ```bash
 ls ~/.claude/{skills,agents,commands,hooks,rules}
-# Expect: 9 skills/, 7 agents/, 10 commands/, 8 hooks/, 3 rules/
+# Expect: 14 skills/, 7 agents/, 10 commands/, 8 hooks/, 3 rules/
 
 grep -c "{{CLAUDE_HOME}}" ~/.claude/settings.json    # 0 required
 ```
@@ -141,7 +143,7 @@ Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-proje
 
 ## Inventory
 
-### Skills (9)
+### Skills (14)
 - **audit-remediate-loop** — 5-branch parallel auditor pattern with 3-round cap
 - **statistical-analysis** — assumption-driven method selection; HAC + stationary bootstrap inline
 - **validate-data** — schema + distribution + provenance checks
@@ -151,6 +153,11 @@ Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-proje
 - **power-analysis** — pre-data n calculation; retrospective power forbidden (Hoenig & Heisey 2001, *Am Stat* 55(1):19, [doi.org/10.1198/000313001300339897](https://doi.org/10.1198/000313001300339897))
 - **pit-canary** — point-in-time leakage detection (López de Prado 2018, *Advances in Financial Machine Learning* Ch. 7 "Cross-Validation in Finance", ISBN 978-1-119-48208-6; full citations in [skills/pit-canary/SKILL.md](skills/pit-canary/SKILL.md))
 - **multipletest-gate** — family-wise register + correction; methods + DOIs in [skills/multipletest-gate/SKILL.md](skills/multipletest-gate/SKILL.md) (Hansen 2005, White 2000, Benjamini & Hochberg 1995, Holm 1979)
+- **survival-analysis** — Kaplan-Meier + Cox PH + scaled-Schoenfeld diagnostics + AFT; Therneau & Grambsch 2000; cross-domain (finance time-to-default, epi time-to-event, biostats duration outcomes)
+- **mediation-analysis** — VanderWeele 2014 counterfactual NDE/NIE decomposition; bootstrap CIs; E-value sensitivity for unmeasured M-Y confounding
+- **multiple-imputation** — MICE per White, Royston & Wood 2011 (`m ≥ %incomplete`); Rubin's rules; MAR-MNAR sensitivity
+- **bayesian-workflow** — Gelman et al. 2020 11-step workflow; weakly-informative priors per Gelman 2008; R-hat + ESS + divergence diagnostics per Vehtari et al. 2021; LOO-CV via PSIS
+- **meta-analysis** — DerSimonian-Laird + REML; Hartung-Knapp-Sidik-Jonkman for small k (IntHout, Ioannidis, Borm 2014); I² + Egger test + trim-and-fill; PRISMA 2020 aligned
 
 ### Slash commands (10)
 `/audit-loop`, `/lit-check`, `/reproduce` (existing) · `/cite-add`, `/adr-new`, `/commit-with-provenance`, `/bootstrap-project`, `/hypothesis-new`, `/preregister`, `/render-manuscript` (new).
@@ -161,8 +168,8 @@ Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-proje
 ### Hooks (8)
 `session_start_provenance`, `session_end_audit_log`, `pre_write_seed_guard`, `precommit_seed_guard`, `pre_bash_safety`, `post_write_notebook_clean` (existing) · `precommit_citation_cff`, `pre_write_phi_guard` (new; PHI guard cwd-scoped to population-health globs).
 
-### Scripts (5)
-`commit_with_provenance.py`, `bootstrap_project.py`, `build_data_manifest.py`, `build_manuscript_reference.py`, `render_manuscript.py`.
+### Scripts (6)
+`deploy.py`, `commit_with_provenance.py`, `bootstrap_project.py`, `build_data_manifest.py`, `build_manuscript_reference.py`, `render_manuscript.py`.
 
 ## MCP servers
 

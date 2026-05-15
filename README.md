@@ -9,7 +9,7 @@ Tooling for an independent researcher working across:
 - **Finance & financial markets** — futures backtest pipelines (signal-decay, factor research, ML/HMM regime modeling), KPI report cards keyed to survival-constrained metrics (terminal-wealth-q05, Calmar, profit-factor, R-multiple; Sharpe is reporting-only), family-wise multiple-testing gates (Hansen SPA, White Reality Check, BH FDR, Holm).
 - **Population science & public health** — STROBE / CONSORT / STARD / TRIPOD+AI / PRISMA reporting standards, DAG-driven adjustment-set selection (Pearl back-door criterion via dagitty), E-value sensitivity for unmeasured confounding (VanderWeele & Ding 2017), HIPAA Safe Harbor PHI write-guard, DUA/IRB compliance tracking (45 CFR §46.111).
 - **Statistics & biostatistics** — assumption-driven method selection, HAC standard errors (Newey-West / Andrews) and stationary block bootstrap (Politis-Romano / Politis-White), pre-data power analysis (Cohen 1988; retrospective power forbidden per Hoenig & Heisey 2001).
-- **App development** — Python tooling (`uv` env, `ruff` lint/format, `pytest`, `nbstripout` + `nbqa` for notebooks), pre-commit hooks (seed-guard with AST inspection, CITATION.cff validator), 13-field ReproLog reproducibility envelope, atomic-write idioms, Conventional Commits 1.0.0 + ICMJE 2026 AI-assistance disclosure trailers.
+- **Reproducible-research app development** — Python tooling for research code (`uv` env, `ruff` lint/format, `pytest`, `nbstripout` + `nbqa` for notebooks), pre-commit hooks (seed-guard with AST inspection, CITATION.cff validator, HIPAA PHI guard), 13-field ReproLog reproducibility envelope, atomic-write idioms, Conventional Commits 1.0.0 + ICMJE 2026 AI-assistance disclosure trailers. *Out of scope:* general web framework / API / container / deployment tooling — use Claude Code's base capability with project-specific guidance for those domains.
 
 Path-scoped rules ([`claude/rules/`](claude/rules/)) activate per project cwd, so the same dotfiles behave appropriately across these domains:
 
@@ -50,7 +50,7 @@ claude/                       # Claude Code user-level config (→ ~/.claude/)
 ├── hooks/                    # 8 pre/post-tool-use Python scripts
 ├── rules/                    # 3 cwd-scoped rule files
 ├── scripts/                  # deploy.py + 5 other Python tools
-├── skills/                   # 9 procedural playbooks
+├── skills/                   # 14 procedural playbooks
 └── templates/                # 12 reusable templates (manuscript ref.docx, ADR, etc.)
 ```
 
