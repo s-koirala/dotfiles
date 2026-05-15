@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/s-koirala/dotfiles/skills/emit-repro-log/repro_log_schema.json",
+  "title": "ReproLog",
+  "description": "13-field reproducibility record emitted before any run that writes to artifacts/ or logs/.",
+  "$comment": "Field set ported verbatim from SKIE-Universe src/skie_ninja/utils/reproducibility.py blob SHA-1 3f90d557bed13ccfd3e362077e5b40ae06ebd084 (gh api fetched 2026-05-15). Drift detection: re-fetch the blob and compare SHA-1; mismatch indicates schema is stale.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "phase",
+    "hypothesis_id",
+    "timestamp_utc",
+    "git_head",
+    "pip_freeze_sha256",
+    "pip_freeze_path",
+    "dataset_checksums",
+    "rng_seed",
+    "model_hash",
+    "config_resolved_sha256",
+    "host",
+    "env_id"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ULID (preferred, lexical-sort) or uuid4 hex"
+    },
+    "phase": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Suggested values: bootstrap, backtest, inference, validation, deliver. Not enum-constrained for forward compatibility."
+    },
+    "hypothesis_id": {
+      "type": "string",
+      "description": "HID (e.g. H055) or 'n/a' for non-hypothesis-bound work"
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 with microsecond precision; UTC"
+    },
+    "git_head": {
+      "type": "string",
+      "description": "40-hex SHA of HEAD, or 'unknown' if outside a git repo",
+      "pattern": "^([0-9a-f]{40}|unknown)$"
+    },
+    "pip_freeze_sha256": {
+      "type": "string",
+      "description": "Full 64-hex SHA-256 of pip-freeze stdout. NOT a truncated cache digest.",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "pip_freeze_path": {
+      "type": "string",
+      "description": "Project-relative POSIX path to the captured freeze text"
+    },
+    "dataset_checksums": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "description": "Per-dataset-file SHA-256 from data/_manifest.json (R1-E)"
+    },
+    "rng_seed": {
+      "type": "integer",
+      "description": "Explicit seed used; 0 if no sampling"
+    },
+    "model_hash": {
+      "type": ["string", "null"],
+      "description": "Model commit / weight SHA when applicable"
+    },
+    "config_resolved_sha256": {
+      "type": ["string", "null"],
+      "description": "SHA-256 of resolved config snapshot (e.g., frozen design.md content). Null when no config attached; 64-hex string when set — empty string is not valid.",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "python", "cpu"],
+      "properties": {
+        "os": {"type": "string"},
+        "python": {"type": "string", "description": "platform.python_version() output, e.g. '3.12.1' — version only, NOT interpreter path"},
+        "cpu": {"type": "string", "description": "platform.machine() output, e.g. 'AMD64'"}
+      }
+    },
+    "env_id": {
+      "type": "string",
+      "description": "file_sha256(uv.lock) if present; else 'no-uv-lock'"
+    }
+  }
+}
