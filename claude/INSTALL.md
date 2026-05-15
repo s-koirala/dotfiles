@@ -1,9 +1,20 @@
 # Installing `s-koirala/dotfiles` → `~/.claude/`
 
-User-level Claude Code configuration for an independent quant/epidemiology
-researcher. Deploys 9 skills, 10 slash commands, 7 agents, 8 hooks, 5 scripts,
-and 25 templates (12 in `templates/` + 13 in `scripts/bootstrap_templates/`)
-into `~/.claude/` on Windows, macOS, or Linux via an idempotent Python script.
+User-level Claude Code configuration for an independent researcher working
+across finance + financial markets, population science + public health,
+statistics + biostatistics, and app development. See the top-level
+[README](../README.md) for the per-domain scope breakdown and the cwd-glob
+rule activation table. This file is the installation procedure.
+
+Deploys 9 skills, 10 slash commands, 7 agents, 8 hooks, 6 scripts, and 24
+templates (12 in `templates/` + 12 in `scripts/bootstrap_templates/`) into
+`~/.claude/` on Windows, macOS, or Linux via an idempotent Python script.
+
+## How to use this guide
+
+- **Manual install** (3 lines of bash): jump to [§Quickstart — manual](#quickstart--manual-no-ai).
+- **AI-assisted install**: jump to [§Quickstart — Claude Code](#quickstart--claude-code-ai-assisted). Inside that section is a collapsible `<details>` block with a single fenced code block — **copy the contents of that code block (and only that block) into a fresh Claude Code session** at `~/`. The rest of this INSTALL.md is documentation; do not paste it.
+- **Verification, inventory, MCP setup, updates, deferred items, identity hygiene**: continue past the quickstart sections.
 
 ## Requirements
 
@@ -34,10 +45,13 @@ investigated.
 
 ## Quickstart — Claude Code (AI-assisted)
 
+**Copy *only* the contents of the fenced code block below** (not this paragraph, not the `<details>` markers, not anything outside the triple backticks) into a fresh Claude Code session started at `~/`. The block is self-contained: Claude will read it as a single instruction set and execute the 3-stage install + verify + audit protocol.
+
 <details>
-<summary>Copy-paste into a fresh Claude Code session at <code>~/</code></summary>
+<summary>Click to expand the directive — paste contents of the inner code block only</summary>
 
 ```text
+# ════════ BEGIN PASTE ════════
 You are bootstrapping s-koirala/dotfiles on this machine. Execute every step
 via Bash / Read / Write / Agent tools. Do NOT simulate — actually run each
 command, capture output, halt on failure. Cap audit-remediate at 3 rounds per
@@ -103,13 +117,16 @@ executed); audit findings + disposition; identity check; manual follow-ups
 
 Do NOT `git add`, `git commit`, or `git push`. Bootstrap is read-only toward
 the repo. The report is gitignored; surface its path to the user.
+# ════════ END PASTE ════════
 ```
 
 </details>
 
 The AI path runs the same `deploy.py` commands as the manual path, plus
 filesystem/runtime verification, a 5-branch audit-remediate loop (per the user's
-`audit-remediate-loop` skill spec), and an installation report.
+`audit-remediate-loop` skill spec), and an installation report. Stop pasting at
+the `END PASTE` marker; everything after this point is documentation for the
+human.
 
 ## Verification (after deploy)
 
@@ -149,7 +166,7 @@ Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-proje
 
 ## MCP servers
 
-`~/.claude/mcp.json` declares `arxiv` (`arxiv-mcp-server`) and `crossref` (`crossref-cite-mcp`). Auto-registration is not part of deploy.py — register per-machine:
+`~/.claude/mcp.json` is the canonical MCP manifest (declares `arxiv` / `arxiv-mcp-server` and `crossref` / `crossref-cite-mcp`). Older per-server descriptors under `scripts/mcp/` (`arxiv.json`, `filesystem.json`, `zenodo.json`) predate the consolidated `mcp.json` and are retained for reference. Auto-registration is not part of deploy.py — register per-machine:
 
 ```bash
 claude mcp add-json arxiv "$(jq '.mcpServers.arxiv' ~/.claude/mcp.json)"
@@ -181,7 +198,7 @@ This repo lives under the `s-koirala` GitHub account (real-identity account, not
 
 ## AI-assistance statement
 
-Initial design and 21-commit implementation (R0–R3 from `docs/audits/implementation_plan_dotfiles_additions_2026-05-15.md`): `claude-opus-4-7` in roles `idea`, `code`, `prose`, `audit`. The narrative in this INSTALL.md is AI-drafted; the inventory counts and citations were AI-verified against the filesystem and primary sources. Per [ICMJE recommendations (January 2026)](https://www.icmje.org/recommendations/), AI is acknowledged as a tool, not an author. Audit trail: `docs/audits/` (15 audit_trail files covering plan-compile, R0, every R1 item, every R2 subitem, R3 consolidated, and this INSTALL.md). Reproducibility envelope per `CLAUDE.md` §Reproducibility.
+Initial design and R0–R3 implementation (planned in `docs/audits/implementation_plan_dotfiles_additions_2026-05-15.md`): `claude-opus-4-7` in roles `idea`, `code`, `prose`, `audit`. The narrative in this INSTALL.md is AI-drafted; the inventory counts and citations were AI-verified against the filesystem and primary sources. Per [ICMJE recommendations (January 2026)](https://www.icmje.org/recommendations/), AI is acknowledged as a tool, not an author. Audit trail: `docs/audits/` (14 audit_trail files covering plan-compile, R0, every R1 item, every R2 subitem, R3 consolidated, and this INSTALL.md, plus the implementation plan and research memo — 16 files total). Reproducibility envelope per `CLAUDE.md` §Reproducibility.
 
 ## License
 
