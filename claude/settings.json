@@ -1,0 +1,87 @@
+{
+  "includeCoAuthoredBy": true,
+  "cleanupPeriodDays": 30,
+  "permissions": {
+    "allow": [
+      "Bash(gh:*)",
+      "Bash(git:*)",
+      "Bash(python:*)",
+      "Bash(uv:*)",
+      "Bash(ruff:*)",
+      "Bash(pytest:*)",
+      "Bash(nbqa:*)",
+      "Bash(nbstripout:*)",
+      "Bash(ls:*)",
+      "Bash(pwd)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(jq:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)"
+    ],
+    "ask": [
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:/Users/skoir/.claude/hooks/session_start_provenance.py\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:/Users/skoir/.claude/hooks/pre_write_seed_guard.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:/Users/skoir/.claude/hooks/pre_bash_safety.py\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:/Users/skoir/.claude/hooks/post_write_notebook_clean.py\""
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:/Users/skoir/.claude/hooks/session_end_audit_log.py\""
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "medium"
+}
