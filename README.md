@@ -53,6 +53,3 @@ claude/                       # Claude Code user-level config (→ ~/.claude/)
 ├── skills/                   # 14 procedural playbooks
 └── templates/                # 12 reusable templates (manuscript ref.docx, ADR, etc.)
 ```
-
-
-Per [ICMJE Recommendations (January 2026)](https://www.icmje.org/recommendations/): `claude-opus-4-7` contributed in roles `idea`, `code`, `prose`, `audit` to the R0–R3 implementation arc (commit count varies as work continues; full audit trail under [`claude/docs/audits/`](claude/docs/audits/) — 14 audit_trail files plus implementation_plan + research_memo, 16 files total). AI is acknowledged as a tool, not an author.
