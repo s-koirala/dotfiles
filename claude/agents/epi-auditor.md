@@ -22,15 +22,17 @@ Cwd-scoped to projects matching `rules/population-health.md` globs (`**/PCP*Cris
 
 ### 2. E-value sensitivity (mandatory for every primary causal estimate)
 - VanderWeele & Ding 2017 [^3] E-value computed and reported.
-- E-value formula: `E = RR + sqrt(RR × (RR − 1))` for risk-ratio estimates.
-- For confidence-interval lower bound: similar with RR replaced by the CI bound.
+- E-value formula depends on the direction of effect:
+  - If RR ≥ 1: `E = RR + sqrt(RR × (RR − 1))`.
+  - If RR < 1 (protective effect): let `RR' = 1/RR`, then `E = RR' + sqrt(RR' × (RR' − 1))`. Applying the RR≥1 formula directly to RR<1 yields `sqrt(negative)` and is incorrect.
+- For confidence-interval bound: use the CI lower bound when RR≥1 (the bound closest to the null); use the CI upper bound (inverted as 1/upper) when RR<1.
 - Verdict: if E-value < 2, the result is unstable to plausible unmeasured confounding; flag as `major`.
 
 ### 3. Reporting-standard coverage
 Read the report (e.g., `docs/reports/<topic>_<date>.md` or `manuscript/manuscript.md`) and verify items per standard claimed in YAML frontmatter:
 - **STROBE** [^4]: 22 items
 - **CONSORT 2010** [^5]: 25 items
-- **STARD 2015** [^6]: 32 items
+- **STARD 2015** [^6]: 30 items
 - **TRIPOD+AI 2024** [^7]: 27 items
 - **PRISMA 2020** [^8]: 27 items
 

@@ -13,18 +13,18 @@ Before any walk-forward run on time-series data, OR as part of `quant-auditor` r
 
 ## Canary pattern
 
-Per López de Prado 2018 *Advances in Financial Machine Learning* §7. Three canaries port from SKIE-Universe `src/skie_ninja/backtest/leak_canaries.py`:
+The leakage taxonomy is grounded in López de Prado 2018 *Advances in Financial Machine Learning* §7 ("Cross-Validation in Finance"), which introduces purge + embargo as the structural defense against horizon-overlap leakage but does NOT itself prescribe the inject-the-future-feature canary technique. The three concrete canaries below are ported from SKIE-Universe `src/skie_ninja/backtest/leak_canaries.py` (internal library) as an operational diagnostic on top of the AFML §7 framework:
 
-1. **Future-return-feature canary.** Inject the (t+1) realized return as a feature. Refit. If the future-feature does NOT achieve dominant feature importance (permutation importance > 0.5 of total), the pipeline has a leak — some pre-existing feature already encodes the future return.
+1. **Future-return-feature canary.** Inject the (t+1) realized return as a feature. Refit. If the injected feature does NOT win the permutation test against random-permutation null (i.e., is not detectably more important than chance), the pipeline already has a leak — some pre-existing feature encodes the future return through another channel. The discriminating statistic is the permutation p-value at the threshold below; the absolute-importance ratio is not load-bearing.
 2. **Label-horizon-exceeds-purge canary.** Verify `label_horizon < purge` in the splitter. If `label_horizon >= purge`, training-set labels reach into validation-set features → information leak.
 3. **HMM-fit-on-test canary** (if HMM regime layer is present). Verify the regime model was fit on TRAIN only, never on TEST. If the regime indicator improves OOS performance when fit on test, the regime layer is leaking.
 
 ## Test statistic
 
 For canary 1 (future-return-feature):
-- Permutation test, **n_perm = 1000**  # justify: SKIE-Universe `leak_canaries.py` default; matches Politis-Romano stationary bootstrap reference resample size
-- p-value threshold: **p < 0.01**  # justify: SKIE-Universe default; conservative since false negative = silent leak, false positive = re-investigate (cheap)
-- Statistic: permutation-test feature importance ratio = `imp(future_feature) / sum(imp(all_features))`
+- Permutation test, **n_perm = 1000**  # justify: Davison & Hinkley 1997 §2.5.1 + Efron & Tibshirani 1993 §19 — generic bootstrap-replicate convention. Politis-Romano 1994 introduces the stationary bootstrap but does not prescribe B; the B=1000 value is the community-canonical Monte-Carlo precision target.
+- p-value threshold: **p < 0.01**  # justify: ported from SKIE-Universe `leak_canaries.py`; conservative because false negative = silent leak in production (high cost) and false positive = re-investigate (low cost). For a project-specific tighter or looser threshold, override in the project's `config/pit_canary.yaml`.
+- Statistic: permutation-test feature importance (e.g., scikit-learn `permutation_importance`) of the injected future-feature, with the null being importance under random-label permutation.
 
 Canary FAILS (i.e., LEAK DETECTED) if the future-feature does NOT dominate at p < 0.01 — meaning the unmolested pipeline already encodes the future return through some other channel.
 
@@ -84,6 +84,8 @@ PIT canaries detect *some* forms of look-ahead bias but cannot prove the pipelin
 
 ## References
 
-- López de Prado, M. (2018). *Advances in Financial Machine Learning*. Wiley. ISBN 978-1119482086. §7 "Cross-validation in finance"; introduces purge + embargo and discusses look-ahead bias.
-- SKIE-Universe `src/skie_ninja/backtest/leak_canaries.py` — port source; threshold defaults verified via `gh api` 2026-05-15.
-- Politis, D. N., & Romano, J. P. (1994). "The Stationary Bootstrap." *J Am Stat Assoc* 89(428):1303. https://doi.org/10.1080/01621459.1994.10476870 — n_perm=1000 default matches stationary-bootstrap canonical resample size.
+- López de Prado, M. (2018). *Advances in Financial Machine Learning*. Wiley. ISBN 978-1119482086. §7 "Cross-Validation in Finance" — introduces purge + embargo as the structural defense against horizon-overlap leakage. §8.3 covers permutation importance for ML pipelines.
+- SKIE-Universe `src/skie_ninja/backtest/leak_canaries.py` — port source for the three concrete canaries; tier-5 internal library (per user evidence hierarchy in CLAUDE.md). Provenance only; primary-source citations for thresholds appear above.
+- Davison, A. C., & Hinkley, D. V. (1997). *Bootstrap Methods and their Application*. Cambridge University Press. ISBN 0-521-57391-2. §2.5.1 — B=1000 bootstrap-replicate convention.
+- Efron, B., & Tibshirani, R. J. (1993). *An Introduction to the Bootstrap*. Chapman & Hall. ISBN 0-412-04231-2. §19 — Monte-Carlo precision targets for permutation tests.
+- Good, P. I. (2005). *Permutation, Parametric, and Bootstrap Tests of Hypotheses*, 3rd ed. Springer. ISBN 978-0387200279. Ch. 3 — permutation-test p-value Monte-Carlo precision.

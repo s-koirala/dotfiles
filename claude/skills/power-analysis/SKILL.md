@@ -34,7 +34,7 @@ This ordering matters: power analysis informs whether n is adequate for the regi
 2. **Compute required n** via the appropriate `statsmodels.stats.power` function:
    - `tt_ind_solve_power` — two-sample t-test (Cohen-d effect size)
    - `tt_solve_power` — one-sample / paired
-   - `zt_ind_solve_power` — two-proportion z-test
+   - `NormalIndPower().solve_power(...)` with `effect_size = statsmodels.stats.proportion.proportion_effectsize(p1, p2)` (Cohen's h transform per Cohen 1988 §6.2) — two-proportion z-test. NOTE: `zt_ind_solve_power` is the z-test for two-sample means under known variance, NOT for proportions; a common confusion.
    - `FTestPower` — F-test / ANOVA / regression overall F
    - `NormalIndPower` — generic z-test
    - For survival: `lifelines.statistics.power_calculation` or analytical Schoenfeld formula

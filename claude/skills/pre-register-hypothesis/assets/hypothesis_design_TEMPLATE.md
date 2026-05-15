@@ -8,7 +8,7 @@ status: designed  # designed | running | evaluated | archived(positive|null|nega
 owner: <<OWNER>>  # defaults to git config user.name
 created: {DATE}
 citations: {CITATIONS}
-external_doi: <<TODO: OSF DOI on R3-2b external pre-reg; omit for internal-only>>
+external_doi: <<EXTERNAL_DOI>>  # set on R3-2b OSF upload; null/omit for internal-only
 ---
 
 # {HID} — {TITLE}

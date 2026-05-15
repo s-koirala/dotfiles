@@ -18,7 +18,7 @@ Append a new hypothesis to the project's `hypothesis_backlog.md`. Steps:
 3. **Validate `--tier`** is in {1, 2, 3, 4, 5}; default to 3 (exploratory).
 
 4. **Validate `--mechanism-doi`** if provided:
-   - Format check: DOI regex `^10\.\d{4,9}/[\-._;()/:A-Z0-9]+$/i`.
+   - Format check: Python regex `re.compile(r'^10\.\d{4,9}/[\-._;()/:A-Za-z0-9]+$', re.IGNORECASE)` (case-insensitivity via flag, not JS-style `/i` suffix). Reference: CrossRef DOI regex documentation https://www.crossref.org/blog/dois-and-matching-regular-expressions/.
    - If CrossRef MCP (R1-B) is available, resolve the DOI to confirm it exists and capture the title for the backlog `Mechanism citation` cell.
    - If MCP unavailable, fall back to a polite-pool HTTPS GET `https://api.crossref.org/works/{doi}` with `User-Agent: ${CROSSREF_MAILTO}`.
    - On format failure or 404, abort with error.

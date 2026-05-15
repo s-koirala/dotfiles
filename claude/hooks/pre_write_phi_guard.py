@@ -24,10 +24,23 @@ import re
 import sys
 from pathlib import Path
 
-# Population-health cwd globs from rules/population-health.md. Substring match
-# on path segments (the rule itself uses **/*foo*/** wildcards for most;
-# PCP*Crisis is a specific case but treated as substring for robustness).
-_EPI_TOKENS = ("pcp", "infectious_disease", "ultrasound", "epidemiolog")
+# Population-health cwd globs from rules/population-health.md. Match rule
+# glob semantics precisely (cf. R3-8-1 audit; mirrors R2-A P2A-1-2 fix).
+#
+# Rule globs:
+#   **/PCP*Crisis/**       — prefix PCP + required infix/suffix Crisis
+#   **/Infectious_Disease*/** — prefix Infectious_Disease (case-sensitive in rule;
+#                              we lower() for cross-platform safety)
+#   **/Ultrasound/**       — exact segment Ultrasound (no wildcard)
+#   **/epidemiolog*/**     — prefix epidemiolog
+#
+# Substring-only matching false-positives on test-pcp-archive, ultrasound-bak, etc.
+_EPI_EXACT_SEGMENTS = {"ultrasound"}
+_EPI_PREFIX_INFIX = (
+    ("pcp", "crisis"),               # PCP*Crisis: prefix pcp + infix/suffix crisis
+    ("infectious_disease", None),    # Infectious_Disease*: prefix only
+    ("epidemiolog", None),           # epidemiolog*: prefix only
+)
 
 # Excluded path segments — don't fire on synthetic fixture/test data.
 _EXCLUDED_SEGMENTS = {"tests", "test", "fixtures", "fixture", "examples"}
@@ -72,9 +85,22 @@ _SELF_REFERENCE_TOKENS = ("pre_write_phi_guard", "PHI_PATTERNS", "re.compile",
 
 
 def cwd_is_epi(cwd: Path) -> bool:
-    """True if any path segment contains an epi-rule token (case-insensitive)."""
+    """True iff some path segment matches one of the rule globs from
+    rules/population-health.md. Exact-segment for Ultrasound; prefix-with-
+    required-infix for PCP*Crisis; prefix-only for Infectious_Disease* and
+    epidemiolog*. Case-insensitive for cross-platform safety.
+    """
     parts = [p.lower() for p in cwd.parts]
-    return any(any(tok in seg for tok in _EPI_TOKENS) for seg in parts)
+    for seg in parts:
+        if seg in _EPI_EXACT_SEGMENTS:
+            return True
+        for prefix, required_infix in _EPI_PREFIX_INFIX:
+            if seg.startswith(prefix):
+                if required_infix is None:
+                    return True
+                if required_infix in seg[len(prefix):]:
+                    return True
+    return False
 
 
 def is_excluded_path(path_str: str) -> bool:

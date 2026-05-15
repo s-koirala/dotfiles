@@ -36,7 +36,7 @@ Project-level multiple-testing family must be tracked explicitly. The family reg
    ```
 
 3. **Compute corrected threshold** depending on method:
-   - **Hansen SPA**: bootstrap resample `n_boot = 1000`  # justify: Hansen 2005 default; matches Politis-Romano stationary-bootstrap canonical. Returns SPA p-value.
+   - **Hansen SPA**: bootstrap resample `n_boot = 1000`  # justify: Davison & Hinkley 1997 §2.5.1 + Efron & Tibshirani 1993 §19 — generic bootstrap-replicate convention for Monte-Carlo precision. Hansen 2005 uses bootstrap replicates in its Monte Carlo studies but does not prescribe a specific B; the 1000 value is community-canonical. Override per project if higher precision needed.
    - **White Reality Check**: similar bootstrap (Politis-Romano stationary). Test for any strategy outperforming the benchmark.
    - **Benjamini-Hochberg FDR**: rank raw p-values; threshold[k] = (k/m) × alpha. Statsmodels `multipletests(method='fdr_bh')`.
    - **Holm**: rank raw p-values; threshold[k] = alpha / (m - k + 1). Conservative FWE control.
