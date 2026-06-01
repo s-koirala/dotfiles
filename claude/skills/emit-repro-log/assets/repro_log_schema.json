@@ -3,7 +3,7 @@
   "$id": "https://github.com/s-koirala/dotfiles/skills/emit-repro-log/repro_log_schema.json",
   "title": "ReproLog",
   "description": "13-field reproducibility record emitted before any run that writes to artifacts/ or logs/.",
-  "$comment": "Field set ported verbatim from SKIE-Universe src/skie_ninja/utils/reproducibility.py blob SHA-1 3f90d557bed13ccfd3e362077e5b40ae06ebd084 (gh api fetched 2026-05-15). Drift detection: re-fetch the blob and compare SHA-1; mismatch indicates schema is stale.",
+  "$comment": "13-field reproducibility envelope; superset of the 5-field mandate in CLAUDE.md (git_head, pip_freeze_sha256, dataset_checksums, rng_seed, model_hash).",
   "type": "object",
   "additionalProperties": false,
   "required": [

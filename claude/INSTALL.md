@@ -8,8 +8,8 @@ not covered by domain skills here (use base Claude Code capability for that).
 See the top-level [README](../README.md) for the per-domain scope breakdown
 and the cwd-glob rule activation table. This file is the installation procedure.
 
-Deploys 14 skills, 10 slash commands, 7 agents, 8 hooks, 6 scripts, and 24
-templates (12 in `templates/` + 12 in `scripts/bootstrap_templates/`) into
+Deploys 14 skills, 8 slash commands, 7 agents, 7 hooks, 4 scripts, and 15
+templates (5 in `templates/` + 10 in `scripts/bootstrap_templates/`) into
 `~/.claude/` on Windows, macOS, or Linux via an idempotent Python script.
 
 ## How to use this guide
@@ -21,11 +21,11 @@ templates (12 in `templates/` + 12 in `scripts/bootstrap_templates/`) into
 ## Requirements
 
 - **Claude Code** (any recent version)
-- **git**, **`gh` CLI** authenticated (private repo)
+- **git**; **`gh` CLI** optional (public repo — only needed for MCP/API tasks)
 - **Python 3.11+** with **`uv`** on PATH
 - **Windows users:** Git Bash (ships with Git for Windows) or WSL. The commands below assume a POSIX-style shell; raw PowerShell will not expand `~/` when passed to external programs.
 - Optional shell tools used in verification snippets: `grep`, `jq` (both included with Git Bash on Windows).
-- Optional, install when needed: **pandoc** (for `/render-manuscript`), per-machine MCP server packages.
+- Optional, install when needed: per-machine MCP server packages.
 
 ## Quickstart — manual (no AI)
 
@@ -62,8 +62,8 @@ the user's audit-remediate-loop skill.
 REPO=https://github.com/s-koirala/dotfiles.git
 
 # Stage 1 — install
-1. Verify: `git --version`; `python --version` (>= 3.11); `gh auth status`
-   (private repo). Halt on any failure.
+1. Verify: `git --version`; `python --version` (>= 3.11). Halt on any failure.
+   (`gh` is optional — only needed for MCP/API tasks, not to clone a public repo.)
 2. Clone or fast-forward: if `~/dotfiles/.git` absent, `git clone $REPO ~/dotfiles`.
    If present + clean + on main, `cd ~/dotfiles && git pull --ff-only origin main`.
    If dirty or divergent, HALT — never force-pull.
@@ -90,9 +90,8 @@ REPO=https://github.com/s-koirala/dotfiles.git
     '.mcpServers.<name>' ~/.claude/mcp.json)"` for each active server in
     `~/.claude/mcp.json`. Do not auto-register.
 12. Identity check: report `git config --global user.{name,email}`, hostname,
-    `uname -a` (or `ver` on Windows). Flag if email matches a real-name
-    pattern when this machine will be used for SKIE-pseudonym publishing
-    work (per `rules/publishing.md`).
+    `uname -a` (or `ver` on Windows). Flag if the global git email looks
+    unintended (e.g. a real email where the GitHub no-reply form was intended).
 
 # Stage 3 — audit (parallel subagents; max 3 rounds)
 13. Spawn in parallel (single message, multiple Agent calls), briefing each
@@ -130,16 +129,23 @@ filesystem/runtime verification, a 5-branch audit-remediate loop (per the user's
 the `END PASTE` marker; everything after this point is documentation for the
 human.
 
+## Customize for your use
+
+This is a template you fork. Two one-time steps make generated output yours:
+
+1. **Identity** — copy `config.example.toml` → `config.toml` (gitignored) and set `author` / `email` / `github_user`. `bootstrap_project.py` reads these so scaffolded projects carry your identity. CLI flags (`--author`, `--user-email`, `--github-user`) and `AUTHOR` / `EMAIL` / `GITHUB_USER` env vars override.
+2. **Rule activation** — the cwd globs at the top of [`rules/quant-project.md`](rules/quant-project.md) and [`rules/population-health.md`](rules/population-health.md) are generic examples (`**/*backtest*/`, `**/*epidemiolog*/`, …). Edit them to match your own project directory names.
+
 ## Verification (after deploy)
 
 ```bash
 ls ~/.claude/{skills,agents,commands,hooks,rules}
-# Expect: 14 skills/, 7 agents/, 10 commands/, 8 hooks/, 3 rules/
+# Expect: 14 skills/, 7 agents/, 8 commands/, 7 hooks/, 2 rules/
 
 grep -c "{{CLAUDE_HOME}}" ~/.claude/settings.json    # 0 required
 ```
 
-Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-project`, `commit-with-provenance`, `render-manuscript`, etc. (10 user-defined commands total).
+Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-project`, `commit-with-provenance`, etc. (8 user-defined commands total).
 
 ## Inventory
 
@@ -147,7 +153,7 @@ Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-proje
 - **audit-remediate-loop** — 5-branch parallel auditor pattern with 3-round cap
 - **statistical-analysis** — assumption-driven method selection; HAC + stationary bootstrap inline
 - **validate-data** — schema + distribution + provenance checks
-- **emit-repro-log** — 13-field ReproLog (port of SKIE-Universe `reproducibility.py`; field list in [skills/emit-repro-log/SKILL.md](skills/emit-repro-log/SKILL.md))
+- **emit-repro-log** — 13-field ReproLog (field list in [skills/emit-repro-log/SKILL.md](skills/emit-repro-log/SKILL.md))
 - **deliver-results** — figures (mplstyle + save_figure), workbook (xlsxwriter), report cards
 - **pre-register-hypothesis** — freeze design.md with SHA-256 anchor
 - **power-analysis** — pre-data n calculation; retrospective power forbidden (Hoenig & Heisey 2001, *Am Stat* 55(1):19, [doi.org/10.1198/000313001300339897](https://doi.org/10.1198/000313001300339897))
@@ -159,28 +165,28 @@ Inside a Claude Code session, `/help` should list `audit-loop`, `bootstrap-proje
 - **bayesian-workflow** — Gelman et al. 2020 11-step workflow; weakly-informative priors per Gelman 2008; R-hat + ESS + divergence diagnostics per Vehtari et al. 2021; LOO-CV via PSIS
 - **meta-analysis** — DerSimonian-Laird + REML; Hartung-Knapp-Sidik-Jonkman for small k (IntHout, Ioannidis, Borm 2014); I² + Egger test + trim-and-fill; PRISMA 2020 aligned
 
-### Slash commands (10)
-`/audit-loop`, `/lit-check`, `/reproduce` (existing) · `/cite-add`, `/adr-new`, `/commit-with-provenance`, `/bootstrap-project`, `/hypothesis-new`, `/preregister`, `/render-manuscript` (new).
+### Slash commands (8)
+`/audit-loop`, `/lit-check`, `/reproduce`, `/adr-new`, `/commit-with-provenance`, `/bootstrap-project`, `/hypothesis-new`, `/preregister`.
 
 ### Agents (7)
 `quant-auditor`, `literature-check`, `reproducibility-verifier` (existing) · `dag-drafter`, `epi-auditor`, `code-reviewer`, `format-auditor` (new).
 
-### Hooks (8)
-`session_start_provenance`, `session_end_audit_log`, `pre_write_seed_guard`, `precommit_seed_guard`, `pre_bash_safety`, `post_write_notebook_clean` (existing) · `precommit_citation_cff`, `pre_write_phi_guard` (new; PHI guard cwd-scoped to population-health globs).
+### Hooks (7)
+`session_start_provenance`, `session_end_audit_log`, `pre_write_seed_guard`, `precommit_seed_guard`, `pre_bash_safety`, `post_write_notebook_clean`, `pre_write_phi_guard` (PHI guard cwd-scoped to population-health globs).
 
-### Scripts (6)
-`deploy.py`, `commit_with_provenance.py`, `bootstrap_project.py`, `build_data_manifest.py`, `build_manuscript_reference.py`, `render_manuscript.py`.
+### Scripts (4)
+`deploy.py`, `commit_with_provenance.py`, `bootstrap_project.py`, `build_data_manifest.py`.
 
 ## MCP servers
 
-`~/.claude/mcp.json` is the canonical MCP manifest (declares `arxiv` / `arxiv-mcp-server` and `crossref` / `crossref-cite-mcp`). Older per-server descriptors under `scripts/mcp/` (`arxiv.json`, `filesystem.json`, `zenodo.json`) predate the consolidated `mcp.json` and are retained for reference. Auto-registration is not part of deploy.py — register per-machine:
+`~/.claude/mcp.json` is the canonical MCP manifest (declares `arxiv` / `arxiv-mcp-server` and `crossref` / `crossref-cite-mcp`). Older per-server descriptors under `scripts/mcp/` (`arxiv.json`, `filesystem.json`) predate the consolidated `mcp.json` and are retained for reference. Auto-registration is not part of deploy.py — register per-machine:
 
 ```bash
 claude mcp add-json arxiv "$(jq '.mcpServers.arxiv' ~/.claude/mcp.json)"
 claude mcp add-json crossref "$(jq '.mcpServers.crossref' ~/.claude/mcp.json)"
 ```
 
-Zenodo + OSF MCPs are deferred (no canonical server exists yet).
+An OSF MCP is deferred (no canonical server exists yet).
 
 ## Updates
 
@@ -197,16 +203,14 @@ section; re-evaluate when first encountered:
 
 2. **`~/.claude/` ↔ `s-koirala/dotfiles` layout migration.** Local working tree is flat (`~/.claude/<X>`); remote wraps content in `claude/<X>`. Future migration via `git filter-repo --to-subdirectory-filter claude/` (preserves history) or chezmoi/stow ([chezmoi.io](https://www.chezmoi.io/), [GNU Stow](https://www.gnu.org/software/stow/)). Defer until first push from local to remote.
 
-3. **Pandoc dependency for `/render-manuscript`.** R3-9 ships `reference.docx` (minimalist B&W styling compatible with major clinical-journal submission requirements: double-spaced, 1-inch margins, 12pt body within commonly accepted ranges; NEJM/JAMA/Annals/AJPH author centers do not converge on a single mandatory font but accept Times New Roman as a safe default) + 5 reporting-standard templates (STROBE/CONSORT/STARD/TRIPOD/PRISMA) + render script + slash command. Per-journal style citations live in [skills/deliver-results/SKILL.md](skills/deliver-results/SKILL.md) and [scripts/build_manuscript_reference.py](scripts/build_manuscript_reference.py). Pandoc itself is NOT bundled. Install when first writing a manuscript: `choco install pandoc` (Windows) / `brew install pandoc` (macOS) / `apt install pandoc` (Linux).
-
 ## Identity hygiene
 
-This repo lives under the `s-koirala` GitHub account (real-identity account, not pseudonymous). Local `git config --local user.email` is `s-koirala@users.noreply.github.com` (GitHub privacy form) to keep the real email out of public commit history. The **SKIE pseudonym** scope is separate, cwd-scoped via `rules/publishing.md` to `**/project-skie/**`, `**/*publication*/**`, `**/*manuscript*/**`.
+Commit history uses the GitHub no-reply email form (`<handle>@users.noreply.github.com`) to keep a real email out of public history. When you adopt this repo, set your own identity once in `config.toml` (copy `config.example.toml`); `bootstrap_project.py` then stamps your identity into scaffolded projects, not the template author's. Avoid embedding unwanted real-name metadata in committed files (notebook `kernelspec` / author fields; a `git config user.name` baked into templates).
 
-## AI-assistance statement
+## Development trail
 
-Initial design and R0–R3 implementation (planned in `docs/audits/implementation_plan_dotfiles_additions_2026-05-15.md`): `claude-opus-4-7` in roles `idea`, `code`, `prose`, `audit`. The narrative in this INSTALL.md is AI-drafted; the inventory counts and citations were AI-verified against the filesystem and primary sources. Per [ICMJE recommendations (January 2026)](https://www.icmje.org/recommendations/), AI is acknowledged as a tool, not an author. Audit trail: `docs/audits/` (14 audit_trail files covering plan-compile, R0, every R1 item, every R2 subitem, R3 consolidated, and this INSTALL.md, plus the implementation plan and research memo — 16 files total). Reproducibility envelope per `CLAUDE.md` §Reproducibility.
+Design and implementation are documented in [`docs/audits/`](docs/audits/) (audit trails + implementation plan + research memo). The repository was built with AI assistance.
 
 ## License
 
-License file pending in the public repo; until added, treat content as released under MIT terms by the GitHub account holder. Real-name attribution discoverable from the GitHub account; never written into committed files.
+License file pending; until added, treat content as released under MIT terms by the repository owner.

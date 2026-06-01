@@ -12,10 +12,9 @@ project's path matches the rule's cwd globs).
 
 Every artifact-producing run in this project emits a 13-field ReproLog at
 `logs/reproducibility/repro_log_{run_id}.json` per the
-[emit-repro-log](https://github.com/s-koirala/dotfiles/tree/main/claude/skills/emit-repro-log)
-skill. All commits use
-[/commit-with-provenance](https://github.com/s-koirala/dotfiles/tree/main/claude/commands/commit-with-provenance.md)
-with `--role={idea|code|prose|audit|multi}` per ICMJE 2026 disclosure.
+[emit-repro-log](~/.claude/skills/emit-repro-log) skill. All commits use
+[/commit-with-provenance](~/.claude/commands/commit-with-provenance.md), which
+emits `Repro-Log-Path:` and `Repro-Log-SHA256:` trailers.
 
 Dataset provenance: `data/_manifest.json` (managed by
 `~/.claude/scripts/build_data_manifest.py`). Run `--check` mode in CI to
@@ -47,8 +46,7 @@ See `manifest.json` for the canonical subdir list. Key conventions:
 - `artifacts/{models,runs}/` — versioned binary outputs.
 - `logs/reproducibility/` — ReproLog records + pip-freeze archive.
 - `research/`, `reports/` — work-in-progress and final reports.
-- `runs/` — top-level run outputs (SKIE-Universe convention; coexists with
-  `artifacts/runs/`).
+- `runs/` — top-level run outputs (coexists with `artifacts/runs/`).
 
 ## Identity hygiene
 

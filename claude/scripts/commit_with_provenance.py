@@ -8,7 +8,7 @@ Per CLAUDE.md reproducibility mandate, every commit emits a ReproLog
 R2-A from docs/audits/implementation_plan_dotfiles_additions_2026-05-15.md.
 
 CLI:
-  commit_with_provenance.py "<subject>" --role={idea|code|prose|audit|multi} \\
+  commit_with_provenance.py "<subject>" \\
       [--scope-strict] [--no-repro <justification>] [--dry-run]
 
 Behavior:
@@ -22,14 +22,12 @@ Behavior:
 5. Compose Conventional Commits 1.0.0 subject + body trailers:
      Repro-Log-Path: <relative path>
      Repro-Log-SHA256: <64-hex of the log content>
-     AI-Assistance: claude-opus-4-7 (role=<--role>)
 6. `git commit -F <message-file>` with the composed message.
 
 Fail-hard conditions:
 - No staged changes -> exit 1.
 - Subject does not match Conventional Commits regex -> exit 1.
 - No project venv detected AND --no-repro not set -> exit 2 with `bootstrap-project --venv` hint.
-- --role missing in publishing-cwd (any cwd matching publishing.md globs) -> exit 1.
 
 Inline pip-freeze rationale: SessionStart cache at ~/.claude/cache/deps_*.json
 stores only `{"sha": <12-hex>, "n": <count>}`; cannot reconstruct full 64-hex.
@@ -59,16 +57,6 @@ _CC_SUBJECT_RE = re.compile(
     r"(\([\w\-./]+\))?!?: .+$"
 )
 
-# Publishing-rule cwd patterns from rules/publishing.md. Cwd matching any of
-# these (via fnmatch on path segments) requires explicit --role.
-# "project-skie" requires exact-segment match (the glob is **/project-skie/**);
-# "*publication*" and "*manuscript*" use substring (glob has wildcards both sides).
-_PUBLISHING_EXACT = ("project-skie",)
-_PUBLISHING_SUBSTRING = ("publication", "manuscript")
-
-_ROLE_ENUM = {"idea", "code", "prose", "audit", "multi"}
-
-
 def run(cmd: list[str], cwd: Path | None = None, check: bool = False,
         capture: bool = True, timeout: int = 30) -> subprocess.CompletedProcess:
     return subprocess.run(
@@ -96,20 +84,6 @@ def staged_changes_exist(root: Path) -> bool:
     r = run(["git", "-C", str(root), "diff", "--cached", "--quiet"])
     # exit 1 = staged changes; exit 0 = no staged changes
     return r.returncode != 0
-
-
-def cwd_is_publishing(cwd: Path) -> bool:
-    """Match rules/publishing.md path-scoped globs.
-
-    Exact-segment for `project-skie` (glob: **/project-skie/**).
-    Substring for `publication` / `manuscript` (globs have wildcards both sides).
-    """
-    parts = [p.lower() for p in cwd.parts]
-    if any(seg == g for seg in parts for g in _PUBLISHING_EXACT):
-        return True
-    if any(g in seg for seg in parts for g in _PUBLISHING_SUBSTRING):
-        return True
-    return False
 
 
 def venv_available(root: Path) -> bool:
@@ -155,8 +129,6 @@ def scope_check(root: Path) -> bool:
 def main(argv: list[str]) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("subject", help="Conventional Commits 1.0.0 subject line")
-    p.add_argument("--role", choices=sorted(_ROLE_ENUM), default=None,
-                   help="AI-assistance role per ICMJE 2026; required in publishing-cwd")
     p.add_argument("--scope-strict", action="store_true",
                    help="Require staged changes to touch artifacts/, logs/, or research/")
     p.add_argument("--no-repro", default=None, metavar="JUSTIFICATION",
@@ -186,13 +158,6 @@ def main(argv: list[str]) -> int:
     if args.scope_strict and not scope_check(root):
         print("ERROR: --scope-strict set but no staged changes touch "
               "artifacts/, logs/, or research/.", file=sys.stderr)
-        return 1
-
-    # Gate 4: --role required in publishing-cwd
-    if cwd_is_publishing(root) and args.role is None and args.no_repro is None:
-        print("ERROR: --role is required in publishing-cwd "
-              f"({_PUBLISHING_GLOBS}). Use --role={{idea|code|prose|audit|multi}}.",
-              file=sys.stderr)
         return 1
 
     # Branch on --no-repro
@@ -235,10 +200,6 @@ def main(argv: list[str]) -> int:
 
         trailers.append(f"Repro-Log-Path: {log_rel.as_posix()}")
         trailers.append(f"Repro-Log-SHA256: {log_sha}")
-
-    # AI-Assistance trailer (always when role provided)
-    if args.role is not None:
-        trailers.append(f"AI-Assistance: claude-opus-4-7 (role={args.role})")
 
     # Compose message
     message_parts = [args.subject, ""]

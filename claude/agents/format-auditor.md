@@ -12,7 +12,7 @@ model: inherit
 Reviews **formatting, documentation, and compliance** concerns that no other specialist auditor covers:
 
 - **Magic-numbers policy** (per [CLAUDE.md](../CLAUDE.md) §"Parameter & Prompt Selection"): every numeric literal in production code/configs has either an inline `# justify:` / `# cv:` / `# ref:` comment or a documented empirical-selection rationale upstream.
-- **Identity hygiene** (per [rules/publishing.md](../rules/publishing.md)): in publishing-cwd or any artifact destined for `s-koirala/dotfiles`, no real-name strings appear in committed content (committed git author email is the no-reply form; no `kernelspec.display_name` with real name; no `git config user.name` value embedded in templates).
+- **Identity hygiene**: no unwanted real-name strings appear in committed content (committed git author email in the no-reply form; no `kernelspec.display_name` with a real name; no `git config user.name` value embedded in templates).
 - **Template-substitution completeness**: rendered templates have NO unsubstituted header-block placeholders. Body `<<TODO: ...>>` guidance markers may remain in templates; header `<<KEY>>` must be filled.
 - **Citation-format consistency**: same paper cited consistently across artifacts (same DOI, same first-author casing, same year, no `et al` drift within a single document).
 - **Docstring policy**: per user CLAUDE.md, default to NO comments unless WHY is non-obvious; one short line max for any new comment; no multi-paragraph docstrings except for public APIs that explicitly demand them.
@@ -42,7 +42,7 @@ By [audit-remediate-loop](../skills/audit-remediate-loop/SKILL.md) for any artif
 
 | Severity | Pattern | Example |
 |---|---|---|
-| critical | Real-name email or strings in committed file under publishing-cwd or in `~/.claude/` | `<real-email pattern; see memory/feedback_identity_hygiene_dotfiles.md (gitignored)>` (real email per memory feedback); first/last name strings |
+| critical | Unwanted real-name email or strings in a committed file in `~/.claude/` or a project repo | a real email where the no-reply form was intended; first/last name strings |
 | critical | Unsubstituted `<<KEY>>` in a rendered (non-template) file | `name: <<NAME>>` left in a deployed CLAUDE.md |
 | major | Numeric literal in production code without `# justify:` / `# cv:` / `# ref:` / upstream empirical anchor | `n_perm = 1000` with no comment |
 | major | Magic threshold in YAML config without inline comment | `alpha: 0.05` with no comment |
@@ -78,9 +78,6 @@ Structured findings JSON (schema matches sibling auditors):
 ## References
 
 - User CLAUDE.md "Parameter & Prompt Selection" — magic-numbers policy
-- User [rules/publishing.md](../rules/publishing.md) — identity hygiene
-- [memory/feedback_identity_hygiene_dotfiles.md](../memory/feedback_identity_hygiene_dotfiles.md) — real-email-leak risk
-- [memory/feedback_sharpe_kpi_only.md](../memory/feedback_sharpe_kpi_only.md) — Sharpe is KPI-only
+- [memory/feedback_sharpe_kpi_only.md](../memory/feedback_sharpe_kpi_only.md) — Sharpe is KPI-only (per-user memory; gitignored)
 - Conventional Commits 1.0.0: https://www.conventionalcommits.org/en/v1.0.0/
-- ICMJE Recommendations (Jan 2026): https://www.icmje.org/recommendations/
 - "Mixture of agents" pattern: Wang et al. (2024) arXiv:2406.04692

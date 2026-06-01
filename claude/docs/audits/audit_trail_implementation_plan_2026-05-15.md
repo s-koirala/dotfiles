@@ -43,9 +43,9 @@ Spawned in parallel.
 | P-1-4 | quant | major | Diagram contradicts deps for R3-7, R3-9, R3-10 | **fixed**: §6 redrawn + cross-check table added per P-1-2 |
 | P-1-6 | quant | major | R2-B rollback leaves orphan state in bootstrapped projects | **fixed**: R2-B1 and R2-B2 rollbacks both include caveat + mitigation (inventory bootstrapped manifests; freeze template tarball or require user opt-in) |
 | P-1-7 | quant | major | R3-3 `# justify:` enforcement aspirational, no hook listed | **fixed**: R3-3 weakened to documentation-only enforcement; "verification by audit-remediate-loop quant-auditor at use-time, not by pre-write hook"; effort kept S |
-| P-1-8 | quant | major | R1-A 13-field count brittle, not verified against SKIE-Universe | **fixed**: R1-A schema spec now ends with build-time `gh api` fetch + set-equality assertion against SKIE-Universe dataclass; source SHA embedded in `$comment` for drift detection |
+| P-1-8 | quant | major | R1-A 13-field count brittle, not verified against the upstream library | **fixed**: R1-A schema spec now ends with a set-equality assertion against the upstream library's dataclass; source-file content hash embedded in `$comment` for drift detection |
 | P-1-9 | quant | major | R1-B verification gate not unattended-runnable | **fixed**: R1-B gate split into "build gate" (JSON parses, uvx --help, claude mcp list — all unattended) and "follow-up gate" (post user-enable per-server calls — documented as not a build gate) |
-| P-1-10 | quant | major | R3-5 pit-canary threshold unspecified | **fixed**: R3-5 specifies permutation-test n_perm=1000 # justify: SKIE-Universe default; threshold p < 0.01 # justify: SKIE-Universe default; build-time gh api fetch + annotation |
+| P-1-10 | quant | major | R3-5 pit-canary threshold unspecified | **fixed**: R3-5 specifies permutation-test n_perm=1000 # justify: upstream-library default; threshold p < 0.01 # justify: upstream-library default; sourced from the upstream library + annotation |
 | P-1-11 | quant | major | R3-6 reference output ambiguous; R3-4 dep wrong | **fixed**: R3-6 gate replays Hansen 2005 Table 1 with 3-dp tolerance; dep on R3-4 dropped (R3-4 is doc-only, doesn't produce p-values); explicit "Project's raw p-values supplied by the user's actual inference run" |
 | P-1-12 | quant | major | Fixture magic numbers in gates unjustified | **fixed**: every fixture numeric annotated `# justify: fixture-only, not default` inline; §4 cross-cutting clarifies "Project-level defaults derive from pre-registration design.md, not from these fixtures" |
 | P-1-13 | quant | major | R3-9 effort + blocked status | **fixed**: R3-9 marked "materially blocked on Q1+Q2+Q3+Q4"; effort L conditional; explicit block called out in item header |
@@ -73,7 +73,7 @@ Per skill spec: exit conditions met after round 1 remediation. Round-2 verificat
 
 - **R2-B2 still dominant** (~25 templates × audit-loop = days of work). Mitigation: each template gets its own 3-round audit cap; cumulative time bounded.
 - **§6 diagram is hand-drawn.** Cross-check table at bottom of §6 is the authoritative source; if the two ever disagree, the table wins.
-- **Per-item replay assumes R1-A + R1-E are clean.** If R1-A schema drifts from SKIE-Universe between build time and audit time, every ReproLog emitted in the interim fails validation. Mitigation: source SHA in schema $comment + build-time set-equality assertion.
+- **Per-item replay assumes R1-A + R1-E are clean.** If R1-A schema drifts from the upstream library between build time and audit time, every ReproLog emitted in the interim fails validation. Mitigation: source-file content hash in schema $comment + set-equality assertion.
 
 ## Round 2 — verification audit results
 

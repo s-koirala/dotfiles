@@ -16,7 +16,7 @@ Steps (Claude executes these by reading the SKILL.md):
 7. Invoke [emit-repro-log](../skills/emit-repro-log/SKILL.md) with `phase=validation`, `hypothesis_id=<HID>`, `config_resolved_sha256=<sha>`.
 8. Update the backlog row: append `frozen_sha256=<sha[:12]>` to the row's `Notes` cell.
 9. Stage `research/01_hypothesis_register/<HID>/design.md` + `hypothesis_backlog.md`.
-10. Run `/commit-with-provenance "feat(pre-reg): freeze <HID> design.md" --role=prose`.
+10. Run `/commit-with-provenance "feat(pre-reg): freeze <HID> design.md"`.
 11. If `--external=osf` is passed AND OSF MCP is wired in (memo §5 Q6 default = OSF if token available; currently deferred to R3-2b): upload to OSF as a private project, capture DOI, add to design.md frontmatter `external_doi:`.
 
 Fail-hard conditions:

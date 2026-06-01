@@ -3,11 +3,11 @@ title: Dotfiles additions — scaffolding, results-delivery, gap analysis
 date: 2026-05-15
 type: research_memo
 status: round-1-final (audit-remediate-loop round 1 complete; exit conditions met — see audit_trail)
-author: SKIE (pseudonym; see rules/publishing.md)
+author: the author's publishing identity
 scope: ~/.claude config additions for github.com/s-koirala/dotfiles
 git_head_at_authoring: (untracked — ~/.claude is not yet a git repo; see pillar A round-0 prerequisite)
 pip_freeze_sha256: n/a (memo authoring; no code execution)
-dataset_checksums: gh api responses for SKIE-Universe tree + selected blob contents (hashed at audit-trail emission, see audit_trail_dotfiles_additions_2026-05-15.md)
+dataset_checksums: upstream-library layout/source references (hashed at audit-trail emission, see audit_trail_dotfiles_additions_2026-05-15.md)
 rng_seed: n/a (no sampling)
 model_commit: n/a (no model)
 ai_assistance: claude-opus-4-7 (3 parallel research subagents + main-session synthesis + literature-check + quant-auditor audit round 1; per ICMJE 2026 [^31])
@@ -62,7 +62,7 @@ Subdirs (always): `src/`, `tests/`, `scripts/`, `notebooks/`, `data/{raw,interim
 | publishing | `manuscript/`, `manuscript/figures/`, `manuscript/supplement/`, `submissions/` |
 | generic | (none) |
 
-Mapping to SKIE-Universe (verified via `gh api repos/s-koirala/SKIE-Universe/git/trees/main?recursive=1` on 2026-05-15): 1:1 for `src/`, `tests/`, `scripts/`, `notebooks/`, `data/raw/`, `data/interim/`, `data/processed/`, `data/external/`, `docs/{audits,decisions,literature,methodology,reports,research_notes,templates}/`, `research/`, `reports/`, `artifacts/{models,runs}/`, `config/`, `logs/reproducibility/`, `logs/promotions/`. SKIE-Universe has BOTH a top-level `runs/` AND `artifacts/runs/` as sibling directories — bootstrap emits both to preserve compatibility with any existing tooling that hard-codes `runs/`; consolidation, if desired, is deferred to a per-project ADR.
+Mapping to the upstream library's layout: 1:1 for `src/`, `tests/`, `scripts/`, `notebooks/`, `data/raw/`, `data/interim/`, `data/processed/`, `data/external/`, `docs/{audits,decisions,literature,methodology,reports,research_notes,templates}/`, `research/`, `reports/`, `artifacts/{models,runs}/`, `config/`, `logs/reproducibility/`, `logs/promotions/`. The upstream library has BOTH a top-level `runs/` AND `artifacts/runs/` as sibling directories — bootstrap emits both to preserve compatibility with any existing tooling that hard-codes `runs/`; consolidation, if desired, is deferred to a per-project ADR.
 
 Standards conformance:
 - `CHANGELOG.md` per Keep a Changelog 1.1.0 [^3].
@@ -77,7 +77,7 @@ Standards conformance:
 
 The bootstrap script writes a `manifest.json` at project root containing:
 - `bootstrap_script_version` (SemVer) and `bootstrap_script_git_head`
-- `python_version` — read from SKIE-Universe `pyproject.toml` `[project] requires-python` at bootstrap time (`gh api repos/s-koirala/SKIE-Universe/contents/pyproject.toml`) and pinned to that range; rationale is wheel-availability for `numba`/`llvmlite` per [numba installation matrix](https://numba.readthedocs.io/en/stable/user/installing.html). User override via `--python-version` flag.
+- `python_version` — read from the upstream library's `pyproject.toml` `[project] requires-python` at bootstrap time and pinned to that range; rationale is wheel-availability for `numba`/`llvmlite` per [numba installation matrix](https://numba.readthedocs.io/en/stable/user/installing.html). User override via `--python-version` flag.
 - per-file SHA-256 of every templated file written
 - `rules_file` (which `~/.claude/rules/*.md` activates for the chosen `--kind`)
 - `venv_created` (bool — see §A.5 hook compatibility)
@@ -93,11 +93,11 @@ The bootstrap is **itself a reproducible artifact**. Sandve 2013 Rules 1+2+10 [^
 
 ### A.6 Open questions (pillar A)
 
-1. **`[build-system]` declaration in pyproject template?** SKIE-Universe defers it as a known follow-up. Add `hatchling`/`setuptools>=68` at bootstrap, or preserve the deferred-state pattern?
+1. **`[build-system]` declaration in pyproject template?** The upstream library defers it as a known follow-up. Add `hatchling`/`setuptools>=68` at bootstrap, or preserve the deferred-state pattern?
 2. **Documentation site renderer?** Emit Quarto `_quarto.yml` (richer; PDF/HTML/docx from one source), Sphinx `conf.py` (Python-idiomatic), or none?
-3. **Zenodo automation for `--kind=publishing`?** Emit `.zenodo.json` + a GitHub Action that auto-deposits on `skie-v*` tags? Requires user's Zenodo concept-DOI.
-4. **`data/` versioning strategy?** Plain gitignore + `_provenance/` exceptions (SKIE-Universe pattern) vs DVC vs git-LFS — confirm same default for epi/publishing kinds.
-5. **Pre-commit Ruff pin?** Lock to v0.6.9 (SKIE-Universe parity) or float to latest at bootstrap time?
+3. **Zenodo automation for `--kind=publishing`?** Emit `.zenodo.json` + a GitHub Action that auto-deposits on release tags? Requires user's Zenodo concept-DOI.
+4. **`data/` versioning strategy?** Plain gitignore + `_provenance/` exceptions (upstream-library pattern) vs DVC vs git-LFS — confirm same default for epi/publishing kinds.
+5. **Pre-commit Ruff pin?** Lock to v0.6.9 (upstream-library parity) or float to latest at bootstrap time?
 
 ---
 
@@ -112,7 +112,7 @@ A single skill `deliver-results` because the pipeline (rcParams → save artifac
 | Path | Role |
 |---|---|
 | [`~/.claude/skills/deliver-results/SKILL.md`](../../skills/deliver-results/SKILL.md) | Skill body |
-| [`~/.claude/skills/deliver-results/assets/skie.mplstyle`](../../skills/deliver-results/assets/skie.mplstyle) | matplotlib style |
+| [`~/.claude/skills/deliver-results/assets/publication.mplstyle`](../../skills/deliver-results/assets/publication.mplstyle) | matplotlib style |
 | [`~/.claude/skills/deliver-results/assets/save_figure.py`](../../skills/deliver-results/assets/save_figure.py) | Figure-export helper with `pdffonts` verification |
 | [`~/.claude/skills/deliver-results/assets/workbook_skeleton.py`](../../skills/deliver-results/assets/workbook_skeleton.py) | `xlsxwriter` template (README/parameters/methods/results/figures/audit_trail sheets) |
 | [`~/.claude/skills/deliver-results/assets/report_card_quant.md`](../../skills/deliver-results/assets/report_card_quant.md) | Backtest disposition-memo template |
@@ -187,7 +187,7 @@ Decisive comparison (xlsxwriter wins for write-only publication pipelines):
 Mandatory sheet order: `README → parameters → methods → results_* → figures → audit_trail → references`. README sheet header literal:
 
 ```
-SKIE Results Workbook
+Results Workbook
 Slug:                {type}_{description}_{YYYY-MM-DD}
 Git HEAD:            {full sha} ({short})
 Project venv:        uv pip freeze SHA-256 = {sha}
@@ -206,12 +206,12 @@ Generated at (UTC):  {ISO8601}
 
 ### B.7 Quant report card (verbatim sections — see `report_card_quant.md` draft)
 
-YAML frontmatter inherited from SKIE-Universe convention (verified via `gh api`): `substrate_dataset_checksum`, `sidecar`, `sidecar_scientific_payload_sha256`, `git_head_at_authoring`, `rng_seed`, `pip_freeze_sha256`, `reporting_standard`, `ai_assistance`. Body sections: Universe & snapshot · Rebalance & execution · Returns convention · Splitter · Headline performance (with cited methods) · NW-HAC SE · Diagnostics · Disposition · Reproducibility appendix.
+YAML frontmatter inherited from the upstream library's convention: `substrate_dataset_checksum`, `sidecar`, `sidecar_scientific_payload_sha256`, `git_head_at_authoring`, `rng_seed`, `pip_freeze_sha256`, `reporting_standard`, `ai_assistance`. Body sections: Universe & snapshot · Rebalance & execution · Returns convention · Splitter · Headline performance (with cited methods) · NW-HAC SE · Diagnostics · Disposition · Reproducibility appendix.
 
 **Sharpe is reporting-only, not an optimization target** (user directive 2026-05-15). The headline performance table lists survival-constrained and risk-adjusted KPIs side by side; Sharpe appears as one row without elaboration. CI methodology for Sharpe — when reported — defers to [`rules/quant-project.md`](../../rules/quant-project.md), which already names Lo 2002 [^33], Opdyke 2007 [^34], and Ledoit-Wolf 2008 [^35] under cwd-scoped quant rules. No decision tree is inlined here.
 
 Performance-table KPIs (one row each, with citation):
-- Terminal-wealth-q05 (survival-constrained tail) — primary promotion gate per SKIE-Universe README.
+- Terminal-wealth-q05 (survival-constrained tail) — primary promotion gate per the upstream library's KPI list.
 - Calmar ratio (annualized return / |MaxDD|).
 - Profit factor (gross gain / gross loss).
 - R-multiple distribution (per-trade reward / risk).
@@ -240,23 +240,23 @@ Same frontmatter pattern, body keyed on reporting standard claimed at top of doc
 
 ## 3. Pillar C — Gap analysis & additions
 
-### C.1 SKIE-Universe pattern extraction (verified via `gh api` on 2026-05-15)
+### C.1 Upstream-library pattern extraction
 
-Patterns currently in SKIE-Universe that should be globalized into `~/.claude`:
+Patterns currently in the upstream library that should be globalized into `~/.claude`:
 
-| SKIE-Universe artifact | Pattern | Proposed `~/.claude` formalization |
+| Upstream-library artifact | Pattern | Proposed `~/.claude` formalization |
 |---|---|---|
-| `src/skie_ninja/utils/reproducibility.py` | 13-field ReproLog dataclass with atomic write | `skills/emit-repro-log/` + `templates/repro_log_schema.json` (JSON Schema 2020-12 [^43]) |
+| `utils/reproducibility.py` | 13-field ReproLog dataclass with atomic write | `skills/emit-repro-log/` + `templates/repro_log_schema.json` (JSON Schema 2020-12 [^43]) |
 | `docs/templates/hypothesis_design.md` | 11-section frozen pre-reg | `skills/pre-register-hypothesis/` + `templates/hypothesis_design_TEMPLATE.md` |
 | `docs/templates/hypothesis_config.yaml` | every scalar has inline `# justify:` neighbor | new `hooks/pre_write_justify_yaml.py` (parallel to existing seed-guard) |
 | `scripts/_hooks/check_repro_log.py` | notebook-level repro gate | `hooks/post_write_repro_log_cell.py` (activates on `notebooks/reproducible/**`) |
 | `scripts/_hooks/check_non_loss_deletion.py` | append-only on protected globs | `hooks/pre_bash_nonloss_guard.py` (reads per-project `.claude/protected_paths.yaml`) |
-| `docs/decisions/ADR-XXXX-*.md` (23 ADRs, verified via `gh api .../contents/docs/decisions` 2026-05-15) | Nygard/MADR ADR chain | `templates/adr_TEMPLATE.md` + `commands/adr-new.md` |
+| `docs/decisions/ADR-XXXX-*.md` (23 ADRs in the upstream library) | Nygard/MADR ADR chain | `templates/adr_TEMPLATE.md` + `commands/adr-new.md` |
 | `hypothesis_backlog.md` | Tier-organized, append-only register | `templates/hypothesis_backlog_TEMPLATE.md` + `commands/hypothesis-new.md` |
-| `src/skie_ninja/inference/power.py` + `power_simulation_*` | pre-data power artifacts | `skills/power-analysis/SKILL.md` (gate between `validate-data` and `statistical-analysis`) |
-| `src/skie_ninja/inference/e_value.py` | E-value sensitivity | enforce via `quant-auditor` agent prompt update |
+| `inference/power.py` + `power_simulation_*` | pre-data power artifacts | `skills/power-analysis/SKILL.md` (gate between `validate-data` and `statistical-analysis`) |
+| `inference/e_value.py` | E-value sensitivity | enforce via `quant-auditor` agent prompt update |
 | `research/_templates/kpi_report_card_template.md` | realized-OOS + bootstrap-forward | `templates/kpi_report_TEMPLATE.md` |
-| `src/skie_ninja/backtest/leak_canaries.py` | PIT canary | `skills/pit-canary/SKILL.md` (invoked by existing `quant-auditor` agent — no new agent; avoids inventory bloat) |
+| `backtest/leak_canaries.py` | PIT canary | `skills/pit-canary/SKILL.md` (invoked by existing `quant-auditor` agent — no new agent; avoids inventory bloat) |
 
 ### C.2 Gap inventory — verdict table
 
@@ -272,13 +272,13 @@ Verdicts: NEEDED (build round 1) · NICE (build later) · SKIP (no value).
 | 6 | DAG drafting (dagitty) | **NEEDED** (epi) | `agents/dag-drafter.md` + `templates/dag_TEMPLATE.dag` (Textor 2016 [^49]; Pearl 2009 [^50]) |
 | 7 | Power analysis | **NEEDED** | `skills/power-analysis/SKILL.md` (Cohen 1988 [^51]; pwr [^52]). **Gate placement: pre-registration → power-analysis → validate-data → statistical-analysis.** Power is design-time (pre-data); validate-data is post-pull. Retrospective power is sensitivity-only per Hoenig & Heisey 2001 [^76]. |
 | 8 | Survival analysis | SKIP (merge) | Add Kaplan-Meier/log-rank/Cox + scaled-Schoenfeld-residual test (Grambsch & Therneau 1994 [^53] extending Schoenfeld 1982 [^77]) + lifelines [^54] to `statistical-analysis` §3 |
-| 9 | Hypothesis backlog auto-curation | **NEEDED** | `commands/hypothesis-new.md` (port SKIE-Universe `scripts/hypothesis_new.py`); validates HID + DOI [^55] |
+| 9 | Hypothesis backlog auto-curation | **NEEDED** | `commands/hypothesis-new.md` (port the upstream library's `scripts/hypothesis_new.py`); validates HID + DOI [^55] |
 | 10 | ADR scaffold | **NEEDED** | `templates/adr_TEMPLATE.md` + `commands/adr-new.md` (Nygard [^6]) |
 | 11 | `/commit-with-provenance` | **NEEDED** | wraps `git interpret-trailers` [^56]; depends on (25) |
 | 12 | MCP servers (arXiv-OAI, CrossRef, Zenodo) | **NEEDED** | `~/.claude/mcp.json` (arXiv-OAI [^57], CrossRef [^45], Zenodo [^58]); Zotero [^59] only if user uses it |
 | 13 | Jupytext paired notebooks | NICE | `templates/jupytext.toml` (paired `ipynb,qmd:percent` [^60]); reference in `rules/publishing.md` |
 | 14 | DUA/IRB tracker (epi) | **NEEDED** | `templates/compliance/dua_TEMPLATE.md` (45 CFR §46.111 [^61]) + `hooks/pre_write_phi_guard.py` (HIPAA Safe Harbor 18 identifiers [^62]) |
-| 15 | Stress-testing CPCV+PBO | SKIP (interaction) | Already in SKIE-Universe `cpcv_path_sharpe.py` + `stress_test.py`; bootstrap (pillar A) propagates the pattern |
+| 15 | Stress-testing CPCV+PBO | SKIP (interaction) | Already in the upstream library (`cpcv_path_sharpe.py` + `stress_test.py`); bootstrap (pillar A) propagates the pattern |
 | 16 | DSPy/GEPA prompt optimization | NICE | `commands/prompt-optimize.md` triggers at user's own 5-occurrence threshold (DSPy [^63]; Khattab et al. 2023 [^64]) |
 | 17 | Multiple-testing family register | **NEEDED** | `templates/multipletest_family_TEMPLATE.yaml` + `skills/multipletest-gate/`; Hansen SPA [^37] / White Reality Check [^36] |
 | 18 | NW-HAC bandwidth selector | **NEEDED** | inline into `statistical-analysis/SKILL.md` §3 (NW 1994 [^40]; Andrews 1991 [^41]) |
@@ -288,7 +288,7 @@ Verdicts: NEEDED (build round 1) · NICE (build later) · SKIP (no value).
 | 22 | AI-assistance commit trailer | **NEEDED** | merged into (11); ICMJE 2026 [^31] + Conventional Commits 1.0.0 [^8] |
 | 23 | `consolidate-memory` wiring check | FLAG | operational; verify `anthropic-skills:consolidate-memory` runs |
 | 24 | E-value enforcement (epi/causal scope only) | **NEEDED** | one-line update to **new** `agents/epi-auditor.md` (or fold into `reproducibility-verifier` with cwd-conditional rule loading) — NOT `quant-auditor`. E-value (VanderWeele & Ding 2017 [^68]) is a confounding-bias sensitivity analysis for observational causal estimation; it does not map to backtested-Sharpe pipelines, where omitted-variable robustness uses Frank 2000 ITCV [^79] instead. Enforce only when cwd matches [`rules/population-health.md`](../../rules/population-health.md). |
-| 25 | ReproLog emitter skill | **NEEDED (#1 priority)** | `skills/emit-repro-log/` + `templates/repro_log_schema.json` (JSON Schema 2020-12 [^43]); copy SKIE-Universe 13-field dataclass verbatim |
+| 25 | ReproLog emitter skill | **NEEDED (#1 priority)** | `skills/emit-repro-log/` + `templates/repro_log_schema.json` (JSON Schema 2020-12 [^43]); copy the upstream library's 13-field dataclass verbatim |
 
 **Round-1 NEEDED count: 14.** Lower-priority NICE/FLAG: 6. SKIP: 4.
 
@@ -335,7 +335,7 @@ deliver-results (pillar B)   ──► consumes ReproLog #25 schema + CITATION.c
 
 These are questions where the answer changes implementation paths. Non-decisive preference toggles are defaulted (see end of section).
 
-1. **Build backend in pyproject template** — `hatchling` / `setuptools>=68` / defer (SKIE-Universe pattern)?
+1. **Build backend in pyproject template** — `hatchling` / `setuptools>=68` / defer (upstream-library pattern)?
 2. **Documentation site renderer** — Quarto / Sphinx / none (for the docs *site*, not for docs *source*)?
 3. **PDF engine** — tectonic / xelatex / weasyprint?
 4. **Quarto vs raw markdown** for longform reports and manuscripts?
@@ -452,7 +452,7 @@ These are questions where the answer changes implementation paths. Non-decisive 
 [^70]: Wilson, G. et al. (2017). Good Enough Practices in Scientific Computing. *PLOS Comput Biol* 13(6):e1005510. https://doi.org/10.1371/journal.pcbi.1005510
 [^71]: Marwick, B., Boettiger, C., Mullen, L. (2018). Packaging Data Analytical Work Reproducibly Using R (and Friends). *Am Statistician* 72(1):80-88. https://doi.org/10.1080/00031305.2017.1375986
 [^72]: Wickham, H. (2014). Tidy Data. *J Stat Softw* 59(10):1-23. https://doi.org/10.18637/jss.v59.i10
-[^73]: SKIE-Universe repository. https://github.com/s-koirala/SKIE-Universe (consulted via `gh api` 2026-05-15)
+[^73]: Internal upstream research library (private; consulted for layout, dataclass field lists, and convention provenance during this memo).
 [^74]: Kovesi, P. (2015). Good Colour Maps: How to Design Them. arXiv:1509.03700. https://arxiv.org/abs/1509.03700 — peer-style derivation of perceptual uniformity in colormaps.
 [^75]: Mertens, E. (2002). Comments on Variance of the IID Estimator in Lo (2002). Working paper (Erasmus University Rotterdam / University of Basel). Cited via secondary aggregators (https://www.scirp.org/reference/referencespapers?referenceid=2920064; https://www.twosigma.com/wp-content/uploads/sharpe-tr-1.pdf). Tier-4 evidence; provides the IID skew/kurtosis correction to Lo 2002's Sharpe SE; generalized by Opdyke 2007 [^34].
 [^76]: Hoenig, J. M., Heisey, D. M. (2001). The Abuse of Power: The Pervasive Fallacy of Power Calculations for Data Analysis. *Am Statistician* 55(1):19-24. https://doi.org/10.1198/000313001300339897 — retrospective/post-hoc power as analysis tool is unsound; pre-data design power is the correct use.

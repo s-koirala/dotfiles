@@ -1,5 +1,5 @@
 {
-  "$schema_note": "MCP server manifest for ~/.claude. Registers servers used by literature-check agent, /cite-add command, and future R3-2b OSF integration. Tokens NEVER inlined here — always file-referenced via env vars. Activate per-machine via `claude mcp add-json <server-name> '{...}'` referencing the entries below, or via `claude mcp add` interactively.",
+  "$schema_note": "MCP server manifest for ~/.claude. Registers servers used by the literature-check agent and DOI/citation lookups. Tokens NEVER inlined here — always file-referenced via env vars. Activate per-machine via `claude mcp add-json <server-name> '{...}'` referencing the entries below, or via `claude mcp add` interactively.",
   "$reference": "Plan R1-B; docs/audits/implementation_plan_dotfiles_additions_2026-05-15.md",
   "mcpServers": {
     "arxiv": {
@@ -35,15 +35,10 @@
         "CROSSREF_MAILTO": "${CROSSREF_MAILTO}"
       },
       "$source": "github.com/h-lu/crossref-cite-mcp. Verified 2026-05-15. Set CROSSREF_MAILTO to your contact email for the polite pool (CrossRef gives higher rate limits to identified users).",
-      "$tools_note": "Resolve DOI -> CSL-JSON / BibTeX / RIS / formatted text. Consumed by /cite-add slash command (R1-C)."
+      "$tools_note": "Resolve DOI -> CSL-JSON / BibTeX / RIS / formatted text. Used for DOI validation (e.g. /hypothesis-new)."
     }
   },
   "$disabled_servers": {
-    "zenodo": {
-      "$status": "no canonical MCP server exists as of 2026-05-15",
-      "$workaround": "Use the generic mcp-server-fetch (https://pypi.org/project/mcp-server-fetch/) against https://zenodo.org/api/ until a dedicated server lands. Auth via OAuth Bearer token from ~/.config/zenodo/token (never inline). Required for R3-2b OSF pre-reg integration and rules/publishing.md Zenodo DOI minting.",
-      "$followup": "Re-evaluate at next dotfiles refresh; track modelcontextprotocol/servers community for a Zenodo addition."
-    },
     "zotero": {
       "$status": "excluded per user directive 2026-05-15 (memo §5 Q5 default = drop)",
       "$source_if_needed": "github.com/danielostrow/zotero-mcp-server"

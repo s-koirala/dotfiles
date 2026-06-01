@@ -66,9 +66,9 @@ Per plan §3 R3-3 placement: power-analysis runs AFTER pre-registration (you can
 6. **Update backlog row** in `hypothesis_backlog.md`:
    - Change `status: designed` to `status: designed` (no change) **and** add the design.md SHA to the row's `Notes` cell as `frozen_sha256=<sha[:12]>`.
 
-7. **Commit via R2-A** with `--role=prose` (pre-registration is design-doc prose, not code):
+7. **Commit via `/commit-with-provenance`**:
    ```
-   /commit-with-provenance "feat(pre-reg): freeze H<NNN> design.md" --role=prose
+   /commit-with-provenance "feat(pre-reg): freeze H<NNN> design.md"
    ```
 
 8. **External pre-registration (deferred to R3-2b)**: if `--external=osf` flag is passed and OSF MCP is available (memo §5 Q6 = OSF), upload the design.md to OSF as a private project, capture the OSF DOI, and add it to the design.md `external_doi:` frontmatter field. Default: internal-only (no external posting); design.md SHA in the ReproLog suffices as a tamper-evident freeze record.
@@ -81,11 +81,10 @@ After completion:
 
 ## Identity hygiene
 
-The `owner:` frontmatter field defaults to `skoir` per SKIE-Universe convention. The committed file is signed by whatever `git config user.email` resolves to (per `rules/publishing.md`, this should be the pseudonym email for any project under publishing-rule cwd).
+The `owner:` frontmatter field defaults to the local part of `git config user.email`. The committed file is signed by whatever `git config user.email` resolves to.
 
 ## References
 
-- SKIE-Universe `docs/templates/hypothesis_design.md` (ported verbatim with link-anchor generalization)
 - López de Prado, M. (2018). *Advances in Financial Machine Learning*. Wiley. — §3.2 (triple-barrier), §7 (purged CV), §12 (CPCV)
 - Foster, E. D., & Deardorff, A. (2017). "Open Science Framework (OSF)." *J Med Libr Assoc* 105(2):203. https://doi.org/10.5195/jmla.2017.88 — external pre-registration target (R3-2b)
 - AsPredicted: https://aspredicted.org/ — short-form pre-reg alternative

@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Bootstrap a new project working directory with SKIE-canonical layout.
+"""Bootstrap a new project working directory with a canonical research layout.
 
-R2-B1 phase (this commit): directory tree + .gitkeep files + manifest.json +
-git init. Template rendering (~25 .tmpl files) lands in R2-B2.
+Creates the directory tree + .gitkeep files + manifest.json + git init, then
+renders the bootstrap templates with the adopter's identity.
 
 Reproducibility: the bootstrap script itself is a reproducible artifact. We
 record into the project's `manifest.json`:
   - bootstrap_script_version (SemVer 2.0.0)
   - bootstrap_script_git_head (git SHA of ~/.claude at bootstrap time)
-  - python_version pin (resolved from SKIE-Universe pyproject.toml at first
-    run; cached in ~/.claude/cache/skie_python_version.txt for offline reruns)
+  - python_version pin (--python-version flag, or a sane default range)
   - per-dir SHA-256 of the directory listing (recursive; for idempotency check)
   - per-file SHA-256 of every templated file (populated in R2-B2; empty here)
   - rules_file: which ~/.claude/rules/*.md activates for the chosen --kind
@@ -30,8 +29,8 @@ Rollback: with --rollback-on-fail, any exception after the project directory
 is created triggers shutil.rmtree on the newly-created directory. Never
 touches an existing tree (idempotent re-run preserves user content).
 
-Filename rule: all generated subdirs follow SKIE-Universe convention. ADR
-files emitted by R1-D's /adr-new follow ADR-NNNN-slug.md.
+Filename rule: all generated subdirs follow the canonical research layout. ADR
+files emitted by /adr-new follow ADR-NNNN-slug.md.
 
 Hard constraints:
 - Python 3.11+ stdlib only (no jinja2; templates use str.format_map in R2-B2)
@@ -51,7 +50,7 @@ import tempfile
 from pathlib import Path, PurePosixPath
 
 _SCRIPT_VERSION = "0.2.0"  # SemVer 2.0.0; bump on template or layout change
-# 0.2.0: R2-B2 — added template rendering (12 .tmpl files)
+# 0.2.0: R2-B2 — added template rendering
 # 0.1.0: R2-B1 — initial CLI + dir tree + manifest
 
 # Bootstrap template source dir (relative to this script)
@@ -59,9 +58,8 @@ _TEMPLATE_DIR = Path(__file__).resolve().parent / "bootstrap_templates"
 # Shared template dir (used by R1-C, R1-D, etc.)
 _SHARED_TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 
-# Subdirs created for all --kind variants. Order matches docs/audits/
-# implementation_plan_dotfiles_additions_2026-05-15.md §A.3 (memo) and
-# SKIE-Universe layout verified via gh api.
+# Subdirs created for all --kind variants. Canonical research layout
+# (data lake -> analysis-ready pipeline, docs, artifacts, logs).
 _BASE_SUBDIRS = (
     "src",
     "tests",
@@ -82,8 +80,8 @@ _BASE_SUBDIRS = (
     "reports",
     "artifacts/models",
     "artifacts/runs",
-    "runs",                      # SKIE-Universe has BOTH artifacts/runs/ AND
-                                 # top-level runs/ — emit both per plan audit F-1-3
+    "runs",                      # some tooling hard-codes a top-level runs/;
+                                 # emit both it and artifacts/runs/
     "config",
     "logs/reproducibility",
     "logs/reproducibility/env",  # for pip_freeze_<sha>.txt files
@@ -103,12 +101,6 @@ _KIND_EXTRAS = {
         "data/processed/_provenance",
         "logs/imputation",
     ),
-    "publishing": (
-        "manuscript",
-        "manuscript/figures",
-        "manuscript/supplement",
-        "submissions",
-    ),
     "generic": (),
 }
 
@@ -117,17 +109,20 @@ _KIND_EXTRAS = {
 _KIND_RULES = {
     "quant": "rules/quant-project.md",
     "epi": "rules/population-health.md",
-    "publishing": "rules/publishing.md",
     "generic": None,
 }
 
-# Cache file for the SKIE-Universe Python version pin (gh api fetch); avoids
-# network on every invocation.
-_CACHE_DIR = Path.home() / ".claude" / "cache"
-_PYTHON_VERSION_CACHE = _CACHE_DIR / "skie_python_version.txt"
+# Bootstrap identity config. Gitignored; an adopter copies config.example.toml
+# -> config.toml and sets these once so generated projects carry their own
+# identity, not the template author's.
+_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.toml"
+_IDENTITY_DEFAULTS = {
+    "author": "Your Name",
+    "email": "",
+    "github_user": "your-github-handle",
+}
 
-# Subprocess timeout for gh api / git commands. Justify: gh api p99 < 5s on
-# warm connection; 30s margin covers cold-start + 3xx redirects.
+# Subprocess timeout for git commands. 30s margin covers a cold object cache.
 _SUBPROCESS_TIMEOUT_SEC = 30
 
 
@@ -141,41 +136,55 @@ def run(cmd: list[str], cwd: Path | None = None,
 
 
 def resolve_python_version() -> str:
-    """Fetch SKIE-Universe pyproject.toml requires-python; cache result.
+    """Default Python version pin; override per project with --python-version.
 
-    Falls back to '3.11' (matches user's currently installed py launcher
-    target) if gh api unavailable. Cache is invalidated by user manually
-    removing the cache file; no TTL.
+    justify: 3.11 floor matches the stdlib features this tooling relies on
+    (e.g. tomllib); the <3.13 ceiling reflects wheel availability for the
+    common scientific stack. Any project can override via --python-version.
     """
-    if _PYTHON_VERSION_CACHE.exists():
-        try:
-            return _PYTHON_VERSION_CACHE.read_text(encoding="utf-8").strip()
-        except OSError:
-            pass
-
-    # Fetch from upstream
-    try:
-        r = run(["gh", "api",
-                 "repos/s-koirala/SKIE-Universe/contents/pyproject.toml",
-                 "--jq", ".content"], timeout=_SUBPROCESS_TIMEOUT_SEC)
-        if r.returncode == 0 and r.stdout.strip():
-            import base64
-            content = base64.b64decode(r.stdout.strip()).decode("utf-8")
-            # Parse requires-python from [project] section
-            import re
-            m = re.search(r'^\s*requires-python\s*=\s*"([^"]+)"', content, re.M)
-            if m:
-                version = m.group(1)
-                _CACHE_DIR.mkdir(parents=True, exist_ok=True)
-                _PYTHON_VERSION_CACHE.write_text(version, encoding="utf-8")
-                return version
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        pass
-
-    # Fallback. justify: matches the only Python interpreter currently
-    # installed on the user's machine (py launcher 3.11.9 verified 2026-05-15);
-    # safe default that any project can override with --python-version.
     return ">=3.11,<3.13"
+
+
+def load_identity(cli_author: str | None = None,
+                  cli_email: str | None = None,
+                  cli_github_user: str | None = None) -> dict[str, str]:
+    """Resolve bootstrap identity for emitted projects.
+
+    Precedence (highest first): CLI flag > environment var > config.toml >
+    interactive prompt (TTY only) > placeholder default. config.toml is
+    gitignored; copy config.example.toml and set your values once.
+    """
+    vals = dict(_IDENTITY_DEFAULTS)
+    if _CONFIG_PATH.exists():
+        try:
+            import tomllib
+            data = tomllib.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
+            for k in vals:
+                v = data.get(k)
+                if isinstance(v, str) and v.strip():
+                    vals[k] = v.strip()
+        except (OSError, tomllib.TOMLDecodeError):
+            pass
+    for k in vals:                       # env override (CI / ephemeral machines)
+        env = os.environ.get(k.upper())
+        if env:
+            vals[k] = env
+    if cli_author:
+        vals["author"] = cli_author
+    if cli_email:
+        vals["email"] = cli_email
+    if cli_github_user:
+        vals["github_user"] = cli_github_user
+    if sys.stdin.isatty():               # first-run prompt while still default
+        if vals["author"] == _IDENTITY_DEFAULTS["author"]:
+            r = input("Author name (for pyproject + git) [skip]: ").strip()
+            if r:
+                vals["author"] = r
+        if not vals["email"]:
+            r = input("Commit email (local git config, optional) [skip]: ").strip()
+            if r:
+                vals["email"] = r
+    return vals
 
 
 def script_git_head() -> str:
@@ -286,9 +295,6 @@ def template_files_for(kind: str) -> list[tuple[str, str]]:
         always.append(("hypothesis_backlog.md.tmpl", "hypothesis_backlog.md"))
     elif kind == "epi":
         always.append(("protocol_v0.md.tmpl", "docs/protocol/protocol_v0.md"))
-    elif kind == "publishing":
-        always.append(("manuscript.md.tmpl", "manuscript/manuscript.md"))
-        always.append(("ai_assistance_statement.md.tmpl", "docs/ai_assistance_statement.md"))
     return always
 
 
@@ -297,7 +303,7 @@ def render_all_templates(
     kind: str,
     name: str,
     python_version: str,
-    user_email: str | None,
+    author: str,
     description: str = "",
 ) -> dict[str, str]:
     """Render every template; write to target path; return {target: sha256}.
@@ -309,16 +315,13 @@ def render_all_templates(
     date = dt.date.today().isoformat()
     year = str(dt.date.today().year)
     rules_file = _KIND_RULES[kind] or "(none — generic kind)"
-    license_id = "MIT"  # default; CC-BY-4.0 for publishing handled separately if needed
-    author = user_email.split("@")[0] if user_email else "<<TODO: author>>"
+    license_id = "MIT"  # default SPDX license
 
     scope_text = {
         "quant": "Quant research project. Hypothesis-driven; pre-registered design.md per hypothesis; "
                  "walk-forward backtest with purge + embargo; Hansen SPA gate over the strategy family.",
         "epi": "Population-health research project. STROBE/CONSORT/STARD/TRIPOD reporting per study "
                "design; DAG-driven adjustment-set selection; E-value sensitivity per primary causal estimate.",
-        "publishing": "Publication artifact under SKIE pseudonym. ICMJE-compliant AI-assistance disclosure; "
-                      "Zenodo DOI minted on release; identity hygiene enforced.",
         "generic": "Generic research/scratch project. No kind-specific rules activate; user-global "
                    "rules from ~/.claude/CLAUDE.md still apply.",
     }[kind]
@@ -329,7 +332,7 @@ def render_all_templates(
 
     ctx = {
         "NAME": name,
-        "DESCRIPTION": description or f"{name} ({kind} project bootstrapped from s-koirala/dotfiles)",
+        "DESCRIPTION": description or f"{name} ({kind} project bootstrapped from dotfiles)",
         "KIND": kind,
         "DATE": date,
         "YEAR": year,
@@ -342,9 +345,6 @@ def render_all_templates(
         "REPORTING_STANDARD": reporting_standard,
         "DOTFILES": str(Path.home() / ".claude").replace("\\", "/"),
         "HYPOTHESIS_ROWS": "| H001 | 1 | <<TODO>> | designed | <<DOI>> | seed hypothesis |",
-        "MODEL_ID": "claude-opus-4-7",
-        "MODEL_VERSION": "claude-opus-4-7",
-        "ROLE": "<<TODO: idea | code | prose | audit | multi>>",
     }
 
     file_shas: dict[str, str] = {}
@@ -367,32 +367,6 @@ def render_all_templates(
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(rendered, encoding="utf-8")
         file_shas[target_rel] = hashlib.sha256(rendered.encode("utf-8")).hexdigest()
-
-    # Also emit CITATION.cff from the shared template (R1-C)
-    cff_src = _SHARED_TEMPLATE_DIR / "CITATION.cff.tmpl"
-    cff_target = project_root / "CITATION.cff"
-    if cff_src.exists() and not cff_target.exists():
-        rendered = render_template(cff_src, {
-            **ctx,
-            "TITLE": name,
-            "TYPE": "software",
-            "ABSTRACT": ctx["DESCRIPTION"],
-            "VERSION": "0.0.1",
-            "URL": f"https://github.com/s-koirala/{name}",
-            "REPO_URL": f"https://github.com/s-koirala/{name}",
-            "LICENSE_SPDX": license_id,
-            "KEYWORD1": kind,
-            "KEYWORD2": "research",
-            "DOI": "<<TODO: Zenodo concept DOI on first release>>",
-            "ORCID": "<<TODO: pseudonym-bound ORCID or omit>>",
-            "CITE_TYPE": "article",
-            "CITE_TITLE": "<<TODO>>",
-            "CITE_YEAR": year,
-            "CITE_JOURNAL": "<<TODO>>",
-            "CITE_DOI": "<<TODO>>",
-        })
-        cff_target.write_text(rendered, encoding="utf-8")
-        file_shas["CITATION.cff"] = hashlib.sha256(rendered.encode("utf-8")).hexdigest()
 
     return file_shas
 
@@ -481,7 +455,8 @@ def maybe_run_uv_venv(project_root: Path, python_version: str) -> bool:
 
 
 def git_init_and_commit(project_root: Path, kind: str, script_head: str,
-                        user_email: str | None = None) -> str:
+                        user_email: str | None = None,
+                        user_name: str | None = None) -> str:
     """git init + initial Conventional Commits commit. Returns a status string.
 
     Returns one of:
@@ -497,9 +472,9 @@ def git_init_and_commit(project_root: Path, kind: str, script_head: str,
     if user_email:
         run(["git", "config", "--local", "user.email", user_email],
             cwd=project_root)
-        # If user_email provided, also set user.name to match
-        run(["git", "config", "--local", "user.name",
-             user_email.split("@")[0]], cwd=project_root)
+    if user_name:
+        run(["git", "config", "--local", "user.name", user_name],
+            cwd=project_root)
 
     # Identity check: a commit will fail without user.email + user.name.
     email_r = run(["git", "-C", str(project_root), "config", "user.email"])
@@ -508,12 +483,12 @@ def git_init_and_commit(project_root: Path, kind: str, script_head: str,
             or name_r.returncode != 0 or not name_r.stdout.strip():
         print("WARN: git user.email / user.name not configured. Initial commit "
               "skipped.", file=sys.stderr)
-        print(f"  Configure with:", file=sys.stderr)
+        print("  Configure with:", file=sys.stderr)
         print(f"    git -C {project_root} config --local user.email <your-email>",
               file=sys.stderr)
         print(f"    git -C {project_root} config --local user.name '<Your Name>'",
               file=sys.stderr)
-        print(f"  Then run:", file=sys.stderr)
+        print("  Then run:", file=sys.stderr)
         print(f"    git -C {project_root} add . && git -C {project_root} commit "
               f"-m 'chore: bootstrap {project_root.name} ({kind})'",
               file=sys.stderr)
@@ -535,12 +510,15 @@ def main(argv: list[str]) -> int:
     p.add_argument("--path", type=Path, default=None,
                    help="Parent directory (default: cwd); project created at <path>/<name>")
     p.add_argument("--python-version", default=None,
-                   help="Python version pin (overrides SKIE-Universe lookup)")
+                   help="Python version pin (default: >=3.11,<3.13)")
     p.add_argument("--venv", action="store_true",
                    help="Run `uv venv` after dir tree creation")
+    p.add_argument("--author", default=None,
+                   help="Author name for pyproject + git (default: config.toml, else prompt)")
+    p.add_argument("--github-user", default=None,
+                   help="GitHub handle (default: config.toml)")
     p.add_argument("--user-email", default=None,
-                   help="Set local git config user.email in the new repo "
-                        "(use SKIE pseudonym for publishing-kind)")
+                   help="Set local git config user.email in the new repo")
     p.add_argument("--dry-run", action="store_true",
                    help="Show what would be created; no writes")
     p.add_argument("--rollback-on-fail", action="store_true",
@@ -579,6 +557,8 @@ def main(argv: list[str]) -> int:
             print(f"  {s}/")
         return 0
 
+    identity = load_identity(args.author, args.user_email, args.github_user)
+
     # Build
     project_root.mkdir(parents=True, exist_ok=True)
     try:
@@ -593,7 +573,7 @@ def main(argv: list[str]) -> int:
             kind=args.kind,
             name=args.name,
             python_version=python_version,
-            user_email=args.user_email,
+            author=identity["author"],
         )
 
         manifest = build_manifest(
@@ -608,7 +588,10 @@ def main(argv: list[str]) -> int:
 
         commit_status = git_init_and_commit(
             project_root, args.kind, script_head,
-            user_email=args.user_email,
+            user_email=identity["email"] or None,
+            user_name=(identity["author"]
+                       if identity["author"] != _IDENTITY_DEFAULTS["author"]
+                       else None),
         )
 
     except Exception as e:

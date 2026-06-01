@@ -7,26 +7,24 @@
 ##   - nbqa (apply ruff to notebooks)
 ##   - seed-guard (~/.claude/hooks/precommit_seed_guard.py) — flags un-seeded
 ##     RNG calls and magic numbers in Python / notebook code
-##   - citation-cff (~/.claude/hooks/precommit_citation_cff.py) — validates
-##     CITATION.cff against CFF v1.2.0 minimum schema
 ##   - data-manifest-check (~/.claude/scripts/build_data_manifest.py --check)
 ##     — exits non-zero if data/ files have drifted since last manifest update
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9  # justify: SKIE-Universe parity (memo §C.2 ruff pin)
+    rev: v0.6.9  # justify: pinned for reproducibility
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
 
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.7.1  # justify: SKIE-Universe parity
+    rev: 0.7.1  # justify: pinned for reproducibility
     hooks:
       - id: nbstripout
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.8.7  # justify: SKIE-Universe parity
+    rev: 1.8.7  # justify: pinned for reproducibility
     hooks:
       - id: nbqa-ruff
         args: [--fix]
@@ -39,13 +37,6 @@ repos:
         entry: python -m claude_precommit_seed_guard
         language: system
         files: \.(py|ipynb)$
-        pass_filenames: true
-
-      - id: citation-cff
-        name: CITATION.cff validator (CFF v1.2.0)
-        entry: python <<DOTFILES>>/hooks/precommit_citation_cff.py
-        language: system
-        files: ^CITATION\.cff(\.tmpl)?$
         pass_filenames: true
 
       - id: data-manifest-check

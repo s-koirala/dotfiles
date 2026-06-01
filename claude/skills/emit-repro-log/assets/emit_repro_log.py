@@ -1,8 +1,4 @@
-"""ReproLog emitter — self-contained port of SKIE-Universe reproducibility.py.
-
-Source-of-truth: github.com/s-koirala/SKIE-Universe blob
-src/skie_ninja/utils/reproducibility.py SHA-1 3f90d557bed13ccfd3e362077e5b40ae06ebd084
-(gh api fetched 2026-05-15).
+"""ReproLog emitter — self-contained 13-field reproducibility envelope.
 
 Self-contained — no project-internal imports. Inlines `file_sha256` and a
 minimal `ProjectPaths` discovery (CLAUDE_PROJECT_DIR > pyproject.toml ancestor
@@ -25,12 +21,12 @@ import platform
 import subprocess
 import sys
 import tempfile
-from dataclasses import asdict, dataclass, field, replace
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
 # Subprocess timeout for `git rev-parse` / `uv pip freeze`. Tunable via env var.
-_SUBPROCESS_TIMEOUT_SEC = int(os.environ.get("SKIE_SUBPROCESS_TIMEOUT_SEC", "30"))
+_SUBPROCESS_TIMEOUT_SEC = int(os.environ.get("REPRO_SUBPROCESS_TIMEOUT_SEC", "30"))
 
 # Project-root discovery markers, ordered by specificity.
 _PROJECT_MARKERS = (
@@ -40,7 +36,7 @@ _PROJECT_MARKERS = (
 
 
 # --------------------------------------------------------------------------- #
-# Inlined utilities (replacements for skie_ninja.utils.hashing / .paths)
+# Inlined utilities (self-contained hashing + project-path discovery)
 # --------------------------------------------------------------------------- #
 
 def file_sha256(path: Path, chunk: int = 65536) -> str:
@@ -85,7 +81,7 @@ class ProjectPaths:
 
 
 # --------------------------------------------------------------------------- #
-# ReproLog dataclass — verbatim from SKIE-Universe
+# ReproLog dataclass — 13-field reproducibility envelope
 # --------------------------------------------------------------------------- #
 
 @dataclass(frozen=True)

@@ -4,9 +4,9 @@ date: 2026-05-15
 type: audit_trail
 subject: R1-D from implementation_plan_dotfiles_additions_2026-05-15.md
 loop: per-item audit-remediate-loop
-auditor: gate-only (XS-scope; mirrors SKIE-Universe ADR convention verified via gh api)
+auditor: gate-only (XS-scope; mirrors the upstream library's ADR convention)
 rounds_completed: 0
-exit_reason: gates passed; format matches SKIE-Universe ADR convention verbatim
+exit_reason: gates passed; format matches the upstream library's ADR convention verbatim
 ---
 
 # R1-D build record
@@ -16,7 +16,7 @@ exit_reason: gates passed; format matches SKIE-Universe ADR convention verbatim
 - `~/.claude/commands/adr-new.md` — slash command for auto-numbered ADR creation
 
 ## Format provenance
-Frontmatter and section structure match SKIE-Universe ADR convention verified via `gh api repos/s-koirala/SKIE-Universe/contents/docs/decisions/ADR-0001-project-scope.md` 2026-05-15:
+Frontmatter and section structure match the upstream library's ADR convention:
 - YAML frontmatter: `name, description, type, status, date, supersedes, superseded_by`
 - Body sections: `# ADR-NNNN — Title`, `## Context`, `## Decision`, `## Consequences`, `## Alternatives considered`
 - Added `## References` section (not in upstream but is standard MADR; non-breaking addition)

@@ -36,7 +36,7 @@
 ├── artifacts/
 │   ├── models/           # versioned model binaries
 │   └── runs/             # run aggregate outputs
-├── runs/                 # top-level run outputs (SKIE-Universe convention)
+├── runs/                 # top-level run outputs
 ├── research/             # hypothesis-register / analysis-stage subdirs
 ├── reports/              # rendered reports
 ├── config/               # validated configs (pydantic / yaml)
@@ -45,7 +45,6 @@
 ├── outputs/              # scratch outputs (NOT artifacts)
 ├── CLAUDE.md             # project-local Claude rules
 ├── CHANGELOG.md          # Keep-a-Changelog 1.1.0
-├── CITATION.cff          # CFF v1.2.0
 ├── LICENSE
 ├── pyproject.toml        # PEP 621
 ├── .gitignore
@@ -59,7 +58,7 @@
 # Create venv from project pyproject.toml
 uv venv && uv sync
 
-# Install pre-commit hooks (seed-guard, citation-cff)
+# Install pre-commit hooks (seed-guard)
 uv run pre-commit install
 
 # Run tests
@@ -81,19 +80,8 @@ records:
 - RNG seed
 - model commit hash
 
-Commits use `/commit-with-provenance --role=<role>` which emits
-`Repro-Log-Path:` and `Repro-Log-SHA256:` trailers per ICMJE 2026 AI-assistance
-disclosure.
-
-## Citation
-
-See [CITATION.cff](CITATION.cff) (CFF v1.2.0) for machine-readable citation
-metadata. To add a reference to the bibliography:
-
-```bash
-# Via /cite-add slash command (resolves via CrossRef MCP)
-/cite-add 10.1093/jamiaopen/ooy012
-```
+Commits use `/commit-with-provenance` which emits `Repro-Log-Path:` and
+`Repro-Log-SHA256:` trailers.
 
 ## Architecture decisions
 

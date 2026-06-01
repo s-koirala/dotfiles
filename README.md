@@ -9,15 +9,14 @@ Tooling for an independent researcher working across:
 - **Finance & financial markets** — futures backtest pipelines (signal-decay, factor research, ML/HMM regime modeling), KPI report cards keyed to survival-constrained metrics (terminal-wealth-q05, Calmar, profit-factor, R-multiple; Sharpe is reporting-only), family-wise multiple-testing gates (Hansen SPA, White Reality Check, BH FDR, Holm).
 - **Population science & public health** — STROBE / CONSORT / STARD / TRIPOD+AI / PRISMA reporting standards, DAG-driven adjustment-set selection (Pearl back-door criterion via dagitty), E-value sensitivity for unmeasured confounding (VanderWeele & Ding 2017), HIPAA Safe Harbor PHI write-guard, DUA/IRB compliance tracking (45 CFR §46.111).
 - **Statistics & biostatistics** — assumption-driven method selection, HAC standard errors (Newey-West / Andrews) and stationary block bootstrap (Politis-Romano / Politis-White), pre-data power analysis (Cohen 1988; retrospective power forbidden per Hoenig & Heisey 2001).
-- **Reproducible-research app development** — Python tooling for research code (`uv` env, `ruff` lint/format, `pytest`, `nbstripout` + `nbqa` for notebooks), pre-commit hooks (seed-guard with AST inspection, CITATION.cff validator, HIPAA PHI guard), 13-field ReproLog reproducibility envelope, atomic-write idioms, Conventional Commits 1.0.0 + ICMJE 2026 AI-assistance disclosure trailers. *Out of scope:* general web framework / API / container / deployment tooling — use Claude Code's base capability with project-specific guidance for those domains.
+- **Reproducible-research app development** — Python tooling for research code (`uv` env, `ruff` lint/format, `pytest`, `nbstripout` + `nbqa` for notebooks), pre-commit hooks (seed-guard with AST inspection, HIPAA PHI guard), 13-field ReproLog reproducibility envelope, atomic-write idioms, Conventional Commits 1.0.0. *Out of scope:* general web framework / API / container / deployment tooling — use Claude Code's base capability with project-specific guidance for those domains.
 
 Path-scoped rules ([`claude/rules/`](claude/rules/)) activate per project cwd, so the same dotfiles behave appropriately across these domains:
 
-| Rule | cwd globs |
+| Rule | cwd globs (customize to your own project names) |
 |---|---|
-| `quant-project.md` | `**/SKIE-Ninja*/`, `**/Futures_ML_Prediction/`, `**/*backtest*/`, `**/*factor*/` |
-| `population-health.md` | `**/PCP*Crisis/`, `**/Infectious_Disease*/`, `**/Ultrasound/`, `**/epidemiolog*/` |
-| `publishing.md` | `**/project-skie/`, `**/*publication*/`, `**/*manuscript*/` |
+| `quant-project.md` | `**/*backtest*/`, `**/*factor*/`, `**/*signal*/`, `**/*alpha*/`, `**/*quant*/` |
+| `population-health.md` | `**/*epidemiolog*/`, `**/*cohort*/`, `**/*clinical*/`, `**/*biostat*/`, `**/*public-health*/` |
 
 ## Installation
 
@@ -45,11 +44,11 @@ claude/                       # Claude Code user-level config (→ ~/.claude/)
 ├── settings.json             # permissions + hook registration (with {{CLAUDE_HOME}} placeholder)
 ├── mcp.json                  # MCP server manifest (arxiv + crossref)
 ├── agents/                   # 7 specialist auditor agents
-├── commands/                 # 10 slash commands
-├── docs/audits/              # audit trails covering design + R0-R3 implementation
-├── hooks/                    # 8 pre/post-tool-use Python scripts
-├── rules/                    # 3 cwd-scoped rule files
-├── scripts/                  # deploy.py + 5 other Python tools
+├── commands/                 # 8 slash commands
+├── docs/audits/              # audit trails covering design + implementation
+├── hooks/                    # 7 pre/post-tool-use Python scripts
+├── rules/                    # 2 cwd-scoped rule files
+├── scripts/                  # deploy.py + 3 other Python tools
 ├── skills/                   # 14 procedural playbooks
-└── templates/                # 12 reusable templates (manuscript ref.docx, ADR, etc.)
+└── templates/                # 5 reusable templates (ADR, DAG, DUA, schemas)
 ```

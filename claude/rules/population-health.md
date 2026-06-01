@@ -1,6 +1,6 @@
 # Population-Health Rules
 
-**Apply when cwd matches any of:** `**/PCP*Crisis/**`, `**/Infectious_Disease*/**`, `**/Ultrasound/**`, `**/epidemiolog*/**`.
+**Apply when cwd matches any of:** `**/*epidemiolog*/**`, `**/*cohort*/**`, `**/*clinical*/**`, `**/*biostat*/**`, `**/*public-health*/**`. *(Customize these globs to your own study directory names.)*
 
 If cwd does not match, ignore this section entirely.
 

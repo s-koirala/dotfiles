@@ -2,7 +2,7 @@
 
 Paste into a fresh Claude Code session on a new machine (local, work, remote) to install the full architecture.
 
-Repo: [github.com/s-koirala/dotfiles](https://github.com/s-koirala/dotfiles) (private). The target machine must have `gh` authenticated to a user with read access. Use `gh auth login` first if not already.
+Repo: [github.com/s-koirala/dotfiles](https://github.com/s-koirala/dotfiles) (public). Clone over HTTPS; no `gh` auth is required for a public repo.
 
 ---
 
@@ -27,8 +27,7 @@ Run each; halt on any failure:
 
 - `git --version`
 - `python --version` (must be ≥3.10; report if older)
-- `gh --version`
-- `gh auth status` (halt if not authenticated — repo is private)
+- `gh --version` (optional; only needed for MCP/API tasks, not for cloning a public repo)
 
 Assert `$REPO_URL` matches `^https://github\.com/.+/dotfiles\.git$` and does NOT contain `<fill`. Halt if the placeholder is still present.
 
@@ -56,11 +55,11 @@ Confirm these paths exist after deploy:
 
 - `~/.claude/CLAUDE.md`
 - `~/.claude/settings.json`
-- `~/.claude/agents/` (3 files)
-- `~/.claude/skills/` (3 subdirs)
-- `~/.claude/commands/` (3 files)
-- `~/.claude/rules/` (3 files)
-- `~/.claude/hooks/` (6 files)
+- `~/.claude/agents/` (7 files)
+- `~/.claude/skills/` (14 subdirs)
+- `~/.claude/commands/` (8 files)
+- `~/.claude/rules/` (2 files)
+- `~/.claude/hooks/` (7 files)
 
 ### 1.4 Scaffold machine-local settings if absent
 
@@ -126,7 +125,7 @@ Report. Do not auto-register — the user decides per machine which MCPs to enab
 
 ### 2.6 Identity check
 
-Report `git config --global user.name`, `git config --global user.email`, `hostname`, `uname -a` (or `ver` on Windows cmd). If this machine will be used for the SKIE pseudonym publishing, verify identity hygiene per [rules/publishing.md](../rules/publishing.md) and flag mismatches.
+Report `git config --global user.name`, `git config --global user.email`, `hostname`, `uname -a` (or `ver` on Windows cmd). Flag if the global git identity looks unintended for this machine (e.g. a real email where the GitHub no-reply form was intended).
 
 ### 2.7 Filesystem architecture verification
 

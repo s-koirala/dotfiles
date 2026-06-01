@@ -9,7 +9,7 @@ upstream_audit_trail: docs/audits/audit_trail_dotfiles_additions_2026-05-15.md
 plan_audit_trail: docs/audits/audit_trail_implementation_plan_2026-05-15.md
 git_head_at_authoring: (untracked — R0 establishes; this is the round-1 prerequisite)
 pip_freeze_sha256: n/a (planning artifact)
-dataset_checksums: n/a (re-uses gh-api responses hashed in upstream audit_trail)
+dataset_checksums: n/a (re-uses upstream-library source references hashed in upstream audit_trail)
 rng_seed: n/a
 model_commit: n/a
 ai_assistance: claude-opus-4-7 (planning subagent + remediation pass; per ICMJE 2026)
@@ -28,7 +28,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 - **Reproducibility envelope.** Every artifact-producing item emits an R1-A ReproLog. The five CLAUDE.md fields (git HEAD, pip freeze SHA-256, dataset checksum, RNG seed, model commit) are mandatory; additional schema fields are derived once and documented.
 - **SessionStart cache is non-authoritative.** `hooks/session_start_provenance.py` stores a 12-hex truncated digest as a SessionStart-only optimization. R2-A and ReproLog emitters re-compute the full 64-hex SHA-256 inline. The cache is never read for ReproLog content.
 - **Per-item audit-remediate-loop.** Each build emits `audit_trail_{item-id}_{YYYY-MM-DD}.md` under `~/.claude/docs/audits/`; quant-auditor + literature-check + reproducibility-verifier in parallel; 3-round cap.
-- **Identity hygiene.** R1-C, R2-B, R2-C, R3-2, R3-9 touch publishing-adjacent artifacts. Pre-commit gate: `git config user.email` matches pseudonym; no `kernelspec.display_name` with real name; no `git config user.name` value embedded in templates.
+- **Identity hygiene.** R1-C, R2-B, R2-C, R3-2, R3-9 touch publishing-adjacent artifacts. Pre-commit gate: `git config user.email` matches the author's publishing identity; no `kernelspec.display_name` with real name; no `git config user.name` value embedded in templates.
 - **Magic-numbers policy.** Every numeric in every template/skill has either inline `# justify:` neighbor or upstream empirical selection. Fixture/example numerics in this plan are annotated `# justify: fixture-only, not default`.
 
 ---
@@ -46,7 +46,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 4. **Build steps.**
    1. Write `.gitignore` per §3.
    2. `git init -b main` in `~/.claude/`.
-   3. `git config user.email` precheck — must match SKIE pseudonym before any commit (per `rules/publishing.md`).
+   3. `git config user.email` precheck — must match the author's publishing identity before any commit.
    4. `git remote add origin <s-koirala/dotfiles URL>` (https or ssh per user environment).
    5. `git add -A && git commit -m "chore: initial commit of ~/.claude tracked state"`.
    6. `git fetch origin && git status` — surface any divergence from remote; do not auto-merge.
@@ -71,7 +71,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
    - `~/.claude/skills/emit-repro-log/SKILL.md`
    - `~/.claude/skills/emit-repro-log/assets/repro_log_schema.json`
    - `~/.claude/skills/emit-repro-log/assets/emit_repro_log.py`
-2. **Schema fields (frozen).** Source-of-truth: SKIE-Universe `src/skie_ninja/utils/reproducibility.py`, fetched at build time via `gh api repos/s-koirala/SKIE-Universe/contents/src/skie_ninja/utils/reproducibility.py --jq '.content' | base64 -d`. The schema must enumerate exactly the SKIE-Universe dataclass fields, with the SHA of that source file embedded in the schema's `$comment`. Per CLAUDE.md the five mandatory fields are git_head, pip_freeze_sha256, dataset_checksums, rng_seed, model_hash. The rest derive automatically:
+2. **Schema fields (frozen).** Source-of-truth: the upstream library's reproducibility module (`utils/reproducibility.py`). The schema must enumerate exactly the upstream library's dataclass fields, with the content hash of that source file embedded in the schema's `$comment`. Per CLAUDE.md the five mandatory fields are git_head, pip_freeze_sha256, dataset_checksums, rng_seed, model_hash. The rest derive automatically:
    - `run_id` (str), `phase` (enum: bootstrap|backtest|inference|validation|deliver), `hypothesis_id` (str|null), `timestamp_utc` (ISO 8601 str), `git_head` (40-hex), `pip_freeze_sha256` (64-hex of full freeze text — NOT the truncated cache digest), `pip_freeze_path` (str — project-local path to text file, see R2-A), `dataset_checksums` (object, additionalProperties=str, populated from `data/_manifest.json` per R1-E), `rng_seed` (int|null), `model_hash` (str|null), `config_resolved_sha256` (str|null), `host` (object: `os` str, `python` = `platform.python_version()` like `"3.12.1"` (version only, not interpreter path), `hostname` str). **`env_id` dropped from round-1 schema** — `host` + `pip_freeze_sha256` already pin environment.
 3. **Atomic write — explicit pseudocode** (Windows-safe; required to satisfy byte-identity for SHA-256 verification):
    ```python
@@ -94,10 +94,10 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 5. **Verification gate.**
    - `python -c "import json, jsonschema; s=json.load(open('.../repro_log_schema.json')); jsonschema.Draft202012Validator.check_schema(s)"` exits 0.
    - `--selftest` flag on `emit_repro_log.py`: build fixture from env, write, read back, validate against schema, exit 0.
-   - Schema field set matches `gh api`-fetched SKIE-Universe dataclass field set (set-equality assertion; embedded source SHA validated).
+   - Schema field set matches the upstream library's dataclass field set (set-equality assertion; embedded source-file content hash validated).
    - Byte-identity round-trip: write a fixture from Linux fixture data on Windows, hash bytes; replay on Linux from the same source; assert identical SHA-256.
 6. **Rollback.** Delete `skills/emit-repro-log/`.
-7. **Risk surface.** Schema drift vs SKIE-Universe → mitigated by embedded source SHA + build-time assertion.
+7. **Risk surface.** Schema drift vs the upstream library → mitigated by embedded source-file content hash + build-time assertion.
 8. **Effort.** S (1–2 hr).
 
 ### R1-B — `~/.claude/mcp.json` (memo #12)
@@ -199,7 +199,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
    - SHA verification: `sha256sum logs/reproducibility/repro_log_<id>.json` matches `Repro-Log-SHA256:` trailer.
    - Mutate the repro_log post-commit → re-verify trailer SHA mismatch (proves content-addressing works).
 5. **Rollback.** Delete command + script. Existing commits untouched.
-6. **Risk surface.** Trailer-key collisions with downstream tools (Gerrit). Solo SKIE workflow unaffected.
+6. **Risk surface.** Trailer-key collisions with downstream tools (Gerrit). Solo single-author workflow unaffected.
 7. **Effort.** M (half day) — full pip-freeze emission path adds complexity vs cache read.
 
 ### R2-B — `/bootstrap-project` (pillar A)
@@ -210,7 +210,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 1. **Files to create.**
    - `~/.claude/commands/bootstrap-project.md`
    - `~/.claude/scripts/bootstrap_project.py`
-2. **Content sketch.** CLI argparse; resolve `python_version` from SKIE-Universe `pyproject.toml::[project].requires-python` (gh-api cached); create dir tree per memo §A.3 (always-subdirs + kind-conditionals); emit BOTH `runs/` AND `artifacts/runs/`; **idempotency mechanism explicit**:
+2. **Content sketch.** CLI argparse; resolve `python_version` from the upstream library's `pyproject.toml::[project].requires-python`; create dir tree per memo §A.3 (always-subdirs + kind-conditionals); emit BOTH `runs/` AND `artifacts/runs/`; **idempotency mechanism explicit**:
    - On run, compute per-file SHA-256 of every existing target path.
    - Read `manifest.json` if present.
    - If `manifest.json` exists AND every target's current SHA matches its manifest entry AND `bootstrap_script_git_head` in manifest matches current `~/.claude` HEAD → exit 0 `in sync`.
@@ -228,11 +228,11 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 
 #### R2-B2 — bootstrap templates (~25 .tmpl files)
 1. **Files to create.** `~/.claude/scripts/bootstrap_templates/` containing ~25 `.tmpl` files using Python `str.format_map` placeholders (no Jinja dep). Names per memo §A.3.
-2. **Content sketch.** Each template ports the relevant SKIE-Universe artifact, parametrized for kind. Inline `# justify:` comments retained as source-only documentation (matplotlib-style ignored at runtime). Pre-commit chain in `.pre-commit-config.yaml.tmpl` registers `precommit_seed_guard.py` + `precommit_citation_cff.py` (R1-C).
+2. **Content sketch.** Each template ports the relevant upstream-library artifact, parametrized for kind. Inline `# justify:` comments retained as source-only documentation (matplotlib-style ignored at runtime). Pre-commit chain in `.pre-commit-config.yaml.tmpl` registers `precommit_seed_guard.py` + `precommit_citation_cff.py` (R1-C).
 3. **Dependencies.** R2-B1, R1-A (manifest format), R1-C (CITATION.cff template), R1-D (ADR-0001 seeded into `docs/decisions/`), R1-E (data manifest schema referenced from `validate-data` skill body).
 4. **Verification gate.** Each template renders for each applicable kind; rendered output passes the format-specific validator (YAML for `.yaml`, TOML for `pyproject.toml`, etc.); fixture project bootstraps end-to-end with `session_start_provenance.py` emitting non-empty additionalContext.
 5. **Rollback.** Delete `bootstrap_templates/`; same caveat re bootstrapped projects as R2-B1.
-6. **Risk surface.** Template drift vs SKIE-Universe — frozen template SHA in manifest.json; ~25 templates × audit-loop = significant per-template review surface.
+6. **Risk surface.** Template drift vs the upstream library — frozen template SHA in manifest.json; ~25 templates × audit-loop = significant per-template review surface.
 7. **Effort.** L (2–4 days) — templates dominate the total work.
 
 **Combined R2-B effort: XL (3–5 days).**
@@ -241,7 +241,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 
 1. **Files to create.**
    - `~/.claude/skills/deliver-results/SKILL.md`
-   - `~/.claude/skills/deliver-results/assets/skie.mplstyle`
+   - `~/.claude/skills/deliver-results/assets/publication.mplstyle`
    - `~/.claude/skills/deliver-results/assets/save_figure.py`
    - `~/.claude/skills/deliver-results/assets/workbook_skeleton.py`
    - `~/.claude/skills/deliver-results/assets/report_card_quant.md`
@@ -249,7 +249,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 2. **Content sketch.** As in earlier draft. Critical compliance pin: `report_card_quant.md` lists Sharpe as a single KPI row alongside survival-first KPIs (terminal-wealth-q05, Calmar, profit-factor, R-multiple, MaxDD, Sortino). **No decision tree for Sharpe-CI selection.**
 3. **Dependencies.** R1-A, R1-C, R2-B (consumes bootstrap manifest format).
 4. **Verification gate.**
-   - Figure pipeline: `plt.style.use(skie.mplstyle); save_figure(fig, 'test', target='single_col')` → png/svg/pdf at correct size and 300 dpi.
+   - Figure pipeline: `plt.style.use(publication.mplstyle); save_figure(fig, 'test', target='single_col')` → png/svg/pdf at correct size and 300 dpi.
    - `pdffonts test.pdf` shows all fonts `emb`+`sub`.
    - `workbook_skeleton.py --selftest` creates xlsx with all 7 mandatory sheets.
    - **Sharpe-correction grep gate:** `grep -i "sharpe.*decision\|decision.*sharpe" report_card_quant.md` returns 0 matches; `grep -c "Sharpe" report_card_quant.md` returns exactly 1 (the KPI row).
@@ -267,11 +267,11 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 ### R3-1 — `/hypothesis-new` (memo #9)
 
 1. **Files to create.** `~/.claude/commands/hypothesis-new.md`.
-2. **Content sketch.** As in earlier draft. HID format regex pulled from `gh api repos/s-koirala/SKIE-Universe/contents/hypothesis_backlog.md` at build time.
+2. **Content sketch.** As in earlier draft. HID format regex taken from the upstream library's `hypothesis_backlog.md`.
 3. **Dependencies.** R1-A (ReproLog), R1-B (CrossRef MCP), R2-A (commit-with-provenance), R2-B (template creates backlog).
 4. **Verification gate.** Fixture empty backlog → `/hypothesis-new "Test"` creates HID-001 row; emits R1-A ReproLog for the registry mutation.
 5. **Rollback.** Delete command.
-6. **Risk surface.** HID format drift; `gh api` build-time fetch.
+6. **Risk surface.** HID format drift vs the upstream library.
 7. **Effort.** S.
 
 ### R3-2 — `skills/pre-register-hypothesis` + `/preregister` (memo #5)
@@ -283,11 +283,11 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
    - `~/.claude/skills/pre-register-hypothesis/SKILL.md`
    - `~/.claude/skills/pre-register-hypothesis/assets/hypothesis_design_TEMPLATE.md`
    - `~/.claude/commands/preregister.md`
-2. **Content sketch.** 11-section frozen-design template port from SKIE-Universe. Freeze procedure: write → SHA-256 → emit R1-A ReproLog with `config_resolved_sha256` = design.md SHA → commit via R2-A. R2-A trailers therefore embed the pre-reg SHA via `config_resolved_sha256` (already in R1-A schema — no new trailer key needed).
+2. **Content sketch.** 11-section frozen-design template port from the upstream library. Freeze procedure: write → SHA-256 → emit R1-A ReproLog with `config_resolved_sha256` = design.md SHA → commit via R2-A. R2-A trailers therefore embed the pre-reg SHA via `config_resolved_sha256` (already in R1-A schema — no new trailer key needed).
 3. **Dependencies.** R1-A, R2-A, R3-1.
 4. **Verification gate.** `/preregister HID-001` produces `research/01_hypothesis_register/HID-001/design.md` with all 11 sections; R1-A ReproLog at `logs/reproducibility/repro_log_<run_id>.json` with `config_resolved_sha256` matching design.md content SHA.
 5. **Rollback.** Delete skill dir + command.
-6. **Risk surface.** Template drift; build-time SKIE-Universe fetch.
+6. **Risk surface.** Template drift vs the upstream library.
 7. **Effort.** M.
 
 #### R3-2b — OSF API integration (deferred; depends on §5 Q6 decision)
@@ -323,14 +323,14 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 ### R3-5 — `skills/pit-canary` (memo #20)
 
 1. **Files to create.** `~/.claude/skills/pit-canary/SKILL.md`.
-2. **Content sketch.** Pattern port from SKIE-Universe `src/skie_ninja/backtest/leak_canaries.py` (fetch via `gh api` at build time). **Test statistic explicit**: inject a known future-knowing feature with a fixture effect size; run model fit; compute permutation-test p-value (n_perm=1000 # justify: SKIE-Universe leak_canaries.py default) for the future-feature's marginal contribution. Canary FAILS if p > 0.01 # justify: SKIE-Universe leak_canaries.py default (i.e., the future feature does NOT dominate — implies pipeline already has a leak). Threshold annotation cites the source file line. Invoked by existing `quant-auditor`; no new agent.
+2. **Content sketch.** Pattern port from the upstream library's leak-canary module (`backtest/leak_canaries.py`). **Test statistic explicit**: inject a known future-knowing feature with a fixture effect size; run model fit; compute permutation-test p-value (n_perm=1000 # justify: upstream-library default) for the future-feature's marginal contribution. Canary FAILS if p > 0.01 # justify: upstream-library default (i.e., the future feature does NOT dominate — implies pipeline already has a leak). Invoked by existing `quant-auditor`; no new agent.
 3. **Dependencies.** R1-A, R0; existing `quant-auditor`.
 4. **Verification gate.**
    - Fixture with deliberately-leaked feature → canary p ≥ 0.01 → FAIL.
    - Clean fixture → canary p < 0.01 → PASS.
    - Each run emits R1-A ReproLog with `rng_seed` for the permutation test.
 5. **Rollback.** Delete skill file.
-6. **Risk surface.** Threshold mismatch with future SKIE-Universe updates; build-time `gh api` fetch + annotation.
+6. **Risk surface.** Threshold mismatch with future upstream-library updates; documented via inline annotation.
 7. **Effort.** S.
 
 ### R3-6 — `skills/multipletest-gate` + template (memo #17)
@@ -406,7 +406,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 - **JSON Schema utility.** Pin `jsonschema>=4.18` (Draft 2020-12) in `pyproject.toml.tmpl` dev-deps (R2-B2).
 - **Per-item audit-remediate-loop.** Each build emits structured audit_trail per skill spec; 3-round cap; output to `~/.claude/docs/audits/`.
 - **Provenance trailers.** Items pre-R2-A (R0, R1-A, R1-B, R1-C, R1-D, R1-E) committed manually with plain Conventional Commits subjects; trailer-only commits begin from R2-B onward via `/commit-with-provenance`.
-- **Identity hygiene checkpoints.** R1-C, R2-B, R2-C, R3-2, R3-9 enforce pseudonym + no-real-name checks.
+- **Identity hygiene checkpoints.** R1-C, R2-B, R2-C, R3-2, R3-9 enforce publishing-identity + no-real-name checks.
 - **Magic-numbers policy.** Every fixture numeric in this plan is annotated `# justify: fixture-only`. Project-level defaults derive from pre-registration `design.md` (R3-2a), not from these fixtures.
 - **Filename rule.** `{type}_{description}_{YYYY-MM-DD}.{ext}` for all generated artifacts.
 
@@ -416,7 +416,7 @@ remediated_findings: 6 critical + 20 major + 9 minor from plan-audit round 1
 
 | Memo Q | Topic | Gates | Default if unresolved |
 |---|---|---|---|
-| Q1 | `[build-system]` in pyproject template | R2-B2 | Defer (SKIE-Universe pattern) |
+| Q1 | `[build-system]` in pyproject template | R2-B2 | Defer (upstream-library pattern) |
 | Q2 | Docs-site renderer | R2-B2, R3-9 | Quarto for manuscripts (R3-9), none for docs site (R2-B2) |
 | Q3 | PDF engine | R3-9 | tectonic |
 | Q4 | Quarto vs raw markdown longform | R3-9 | Quarto (stacks on Q1/Q2) |

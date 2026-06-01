@@ -4,7 +4,7 @@ date: <<DATE>>
 type: dua
 dataset: <<DATASET_NAME>>
 provider: <<DATA_PROVIDER>>
-recipient: SKIE (pseudonym)
+recipient: <<RECIPIENT>>
 effective_date: <<EFFECTIVE_DATE>>
 expiration_date: <<EXPIRATION_DATE>>
 ---
@@ -14,7 +14,7 @@ expiration_date: <<EXPIRATION_DATE>>
 ## 1. Parties
 
 - **Provider:** <<DATA_PROVIDER>> (custodian)
-- **Recipient:** SKIE (pseudonym researcher)
+- **Recipient:** <<RECIPIENT>>
 - **Effective period:** <<EFFECTIVE_DATE>> to <<EXPIRATION_DATE>>
 
 ## 2. Dataset description

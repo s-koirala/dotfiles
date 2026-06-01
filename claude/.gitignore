@@ -36,6 +36,7 @@ todos/
 # Per-user state (not for shared dotfiles)
 # =====================================================================
 memory/
+config.toml
 
 # =====================================================================
 # Python build artifacts (in case scripts/ accumulates compiled files)

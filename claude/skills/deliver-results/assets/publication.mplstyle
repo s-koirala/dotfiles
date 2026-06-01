@@ -1,7 +1,7 @@
-## SKIE publication + slide-grade matplotlib style.
+## Publication + slide-grade matplotlib style.
 ## Every value cites a primary source — no magic numbers.
 ## See ../SKILL.md §"Style parameters" for the full citation table.
-## Load via: plt.style.use("~/.claude/skills/deliver-results/assets/skie.mplstyle")
+## Load via: plt.style.use("~/.claude/skills/deliver-results/assets/publication.mplstyle")
 
 # --- Fonts ---------------------------------------------------------
 # DejaVu Sans is matplotlib's default since v2.0 (2017-01-17 release notes).

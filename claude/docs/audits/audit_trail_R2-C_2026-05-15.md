@@ -14,7 +14,7 @@ exit_reason: 0 critical + 0 major + 2 minor (both fixed); verdict exit-loop
 
 ## Files created
 - `~/.claude/skills/deliver-results/SKILL.md` (8 KB)
-- `~/.claude/skills/deliver-results/assets/skie.mplstyle` (~3 KB; 51 rcParams)
+- `~/.claude/skills/deliver-results/assets/publication.mplstyle` (~3 KB; 51 rcParams)
 - `~/.claude/skills/deliver-results/assets/save_figure.py` (~6 KB; SaveResult + pdffonts check)
 - `~/.claude/skills/deliver-results/assets/workbook_skeleton.py` (~9 KB; xlsxwriter 7-sheet; --selftest)
 - `~/.claude/skills/deliver-results/assets/report_card_quant.md` (~5 KB; Sharpe = 1 KPI row)
@@ -35,7 +35,7 @@ exit_reason: 0 critical + 0 major + 2 minor (both fixed); verdict exit-loop
 
 | Gate | Check | Result |
 |---|---|---|
-| 1 | `skie.mplstyle` parses: 51 rcParams, no duplicates | ✓ |
+| 1 | `publication.mplstyle` parses: 51 rcParams, no duplicates | ✓ |
 | 2 | `save_figure.py` syntactically valid; `SaveResult` dataclass + `pdffonts` check present | ✓ |
 | 3 | `workbook_skeleton.py` syntactically valid; all 7 canonical sheets + 13 ReproLog fields | ✓ |
 | 4 | Sharpe-correction: 3 line matches (note + 2 KPI rows); no decision-tree structure; no IID/serial-dep selection rows | ✓ |

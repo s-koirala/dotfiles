@@ -1,0 +1,13 @@
+# Bootstrap identity for new projects scaffolded by scripts/bootstrap_project.py.
+#
+# Copy this file to config.toml (gitignored) and set your values. Generated
+# projects then carry YOUR identity (pyproject author, local git user) instead
+# of the placeholder defaults below. CLI flags (--author / --github-user /
+# --user-email) and matching UPPERCASE env vars (AUTHOR, EMAIL, GITHUB_USER)
+# override these.
+#
+# The repo is fully functional unedited — these are placeholders, not secrets.
+
+author = "Your Name"
+email = "your-handle@users.noreply.github.com"
+github_user = "your-github-handle"

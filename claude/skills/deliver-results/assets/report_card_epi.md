@@ -8,7 +8,6 @@ git_head_at_authoring: <<short_sha>>
 pip_freeze_sha256: <<sha256>>
 dataset_checksums_source: data/_manifest.json
 rng_seed: <<int>>
-ai_assistance: claude-opus-4-7 (role=<<idea|code|prose|audit|multi>>; per ICMJE 2026)
 preregistration_sha256: <<sha256 of docs/protocol/protocol_v0.md>>
 ---
 
@@ -120,9 +119,6 @@ Table 1 (via `tableone`; Pollard et al. 2018 *JAMIA Open* 1(1):26):
 ### Funding (item 22)
 <<TODO>>
 
-### AI-assistance disclosure
-See [docs/ai_assistance_statement.md](../../docs/ai_assistance_statement.md). ICMJE 2026 mandates model + role disclosure; AI tools cannot be authors.
-
 ### Pre-registration
 - Protocol path: `docs/protocol/protocol_v0.md`
 - Frozen SHA-256: <<sha>>
@@ -143,7 +139,7 @@ Adjustment set (back-door criterion): <<list>>
 - Dataset manifest: `data/_manifest.json`
 - RNG seed: <<int>>
 - ReproLog: `logs/reproducibility/repro_log_<<run_id>>.json`
-- Code archive (Zenodo): <<DOI>>
+- Code archive DOI (e.g. Zenodo / OSF): <<DOI>>
 
 ## 9. Referenced datasets
 
@@ -153,4 +149,4 @@ Adjustment set (back-door criterion): <<list>>
 
 ## 10. References
 
-See [CITATION.cff](../../CITATION.cff) `references:`. Add via `/cite-add <DOI>`.
+List references inline or in a project bibliography.

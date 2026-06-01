@@ -16,7 +16,7 @@ Skip for transient EDA / scratch operations that produce no tracked artifact.
 
 ## 13-field contract
 
-Source of truth: SKIE-Universe `src/skie_ninja/utils/reproducibility.py` blob SHA-1 `3f90d557bed13ccfd3e362077e5b40ae06ebd084` (verified via `gh api` 2026-05-15). Schema at [assets/repro_log_schema.json](assets/repro_log_schema.json) embeds the same SHA in its `$comment` for drift detection.
+The 13-field contract is a superset of the 5-field reproducibility mandate in [CLAUDE.md](../../CLAUDE.md) §Reproducibility (git HEAD, pip-freeze SHA-256, dataset checksums, RNG seed, model hash); the remaining fields derive automatically. JSON Schema at [assets/repro_log_schema.json](assets/repro_log_schema.json).
 
 | Field | Type | Semantics |
 |---|---|---|
@@ -71,7 +71,6 @@ Builds a fixture record from current env + writes + reads back + verifies round-
 
 ## References
 
-- SKIE-Universe upstream: `src/skie_ninja/utils/reproducibility.py` blob SHA-1 `3f90d557bed13ccfd3e362077e5b40ae06ebd084` (gh api 2026-05-15).
 - Atomic-write pattern: Python `os.replace` docs (atomicity on POSIX + Windows MoveFileEx).
 - CLAUDE.md "Reproducibility (hook-enforced)" — 5-field mandate (git HEAD, pip freeze, dataset checksum, RNG seed, model commit); the 13 fields here are a superset.
 - Sandve et al. (2013) "Ten Simple Rules for Reproducible Computational Research" *PLOS Comput Biol* 9(10):e1003285. https://doi.org/10.1371/journal.pcbi.1003285

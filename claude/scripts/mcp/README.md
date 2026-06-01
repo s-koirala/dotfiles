@@ -12,7 +12,6 @@ claude mcp add --transport stdio --scope user arxiv -- uvx arxiv-mcp-server
 
 - `arxiv.json` — literature search, used by `literature-check` agent. **Active.** PyPI: `arxiv-mcp-server`.
 - `filesystem.json` — scoped filesystem access outside project cwd. **Active.** npm: `@modelcontextprotocol/server-filesystem` (official).
-- `zenodo.json` — **Planned, do not register.** No canonical PyPI package exists as of 2026-04-14. Implement in-repo or pick a vetted MCP before use.
 
 ## Secrets
 Never put tokens in `env:` directly in a registered MCP server. Use `apiKeyHelper` in `~/.claude/settings.local.json` pointing to an OS keychain script (`security find-generic-password` macOS, `pass` Linux, `cmdkey`/Credential Manager Windows).

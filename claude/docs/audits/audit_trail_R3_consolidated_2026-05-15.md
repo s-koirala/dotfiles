@@ -28,7 +28,7 @@ exit_reason: 0 critical + 6 major + 14 minor; 6 majors + 3 priority minors remed
 | R3-8-1 | quant-auditor | PHI guard `cwd_is_epi` used substring-only matching; would false-positive on `test-pcp-archive/`, `Ultrasound-bak/`, etc. (same defect class as R2-A P2A-1-2) | **fixed**: rewrote `cwd_is_epi` with `_EPI_EXACT_SEGMENTS = {'ultrasound'}` and `_EPI_PREFIX_INFIX = (('pcp','crisis'), ('infectious_disease', None), ('epidemiolog', None))`. Verified on 10 path cases (matches rule globs from `rules/population-health.md` precisely). |
 | R3-2a-1 | quant-auditor | YAML colon inside `<<TODO: OSF DOI on R3-2b external pre-reg; omit for internal-only>>` placeholder broke YAML parse | **fixed**: replaced with `<<EXTERNAL_DOI>>` (single-word, no internal colon) + YAML comment for the explanation |
 | R3-6-1 | quant-auditor | Same YAML colon defect in multipletest_family_TEMPLATE.yaml `family_id` placeholder | **fixed**: renamed `<<TODO: ...>>` to `<<FAMILY_ID>>` etc. with comments. Template now parses after `<<KEY>>` substitution. |
-| L-3-1 | literature-check | pit-canary claimed López de Prado 2018 §7 introduces the canary pattern; §7 actually introduces purge+embargo. Attribution misleading. | **fixed**: reframed §7 as the leakage taxonomy / purge+embargo source; canary pattern explicitly attributed to SKIE-Universe internal lib + AFML §8.3 (permutation importance). |
+| L-3-1 | literature-check | pit-canary claimed López de Prado 2018 §7 introduces the canary pattern; §7 actually introduces purge+embargo. Attribution misleading. | **fixed**: reframed §7 as the leakage taxonomy / purge+embargo source; canary pattern explicitly attributed to the upstream library + AFML §8.3 (permutation importance). |
 | L-3-2 | literature-check | `n_perm = 1000` misattributed to Politis-Romano 1994; paper doesn't prescribe B. Same defect in multipletest-gate. | **fixed**: cited Davison & Hinkley 1997 §2.5.1 + Efron & Tibshirani 1993 §19 + Good 2005 Ch.3 as the community-canonical B=1000 sources. Updated both pit-canary SKILL.md and multipletest_family_TEMPLATE.yaml. |
 | L-3-3 | literature-check | epi-auditor claimed STARD 2015 has 32 items; actual count is 30 per Bossuyt et al. 2015 BMJ 351:h5527 abstract | **fixed**: changed `32 items` to `30 items` |
 
@@ -46,7 +46,7 @@ exit_reason: 0 critical + 6 major + 14 minor; 6 majors + 3 priority minors remed
 - R3-7-1 minor (minimum vs minimal adjustment set distinction in dag-drafter): edge case, doc-note sufficient
 - R3-3-2 minor (ReproLog ordering after design.md SHA): atomic-write idiom inherited from R1-A
 - L-3-4, L-3-6 minor (URL canonical forms — HHS, statsmodels): URLs resolve; canonical-form drift is low-impact
-- L-3-7 minor (tier-too-low source for pit-canary thresholds): primary citations now in place (Davison-Hinkley + Good); SKIE-Universe is provenance only
+- L-3-7 minor (tier-too-low source for pit-canary thresholds): primary citations now in place (Davison-Hinkley + Good); the upstream library is provenance only
 - L-3-8, L-3-9 minor (page-range incompleteness in Hoenig-Heisey and Textor citations): cosmetic
 
 ## Verification — all remediations applied

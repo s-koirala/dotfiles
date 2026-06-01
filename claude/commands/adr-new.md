@@ -28,7 +28,7 @@ Create a new ADR under the current project's `docs/decisions/` directory. Steps:
    - `<<NNNN>>` → the zero-padded number (e.g. `0007`)
    - `<<TITLE>>` → the raw title argument
    - `<<ONE_LINE_DESCRIPTION>>` → `--description` flag value, or `<TODO: one-line>`
-   - `<<TYPE>>` → `--type` flag value, or `project` (matches SKIE-Universe default)
+   - `<<TYPE>>` → `--type` flag value, or `project` (default)
    - `<<DATE>>` → today's ISO date (YYYY-MM-DD)
    - `<<SUPERSEDES_OR_BLANK>>` → empty string
 
@@ -43,9 +43,9 @@ Create a new ADR under the current project's `docs/decisions/` directory. Steps:
 7. Open the file (or print its path) so the user can fill in the Context,
    Decision, Consequences, Alternatives, References sections.
 
-8. Identity hygiene: ADRs are committed to the project repo. Per
-   [rules/publishing.md](../rules/publishing.md), do not include real-name
-   metadata in the ADR. The author is implicit from the git commit author.
+8. Identity hygiene: ADRs are committed to the project repo. Avoid embedding
+   unwanted real-name metadata in the ADR; the author is implicit from the git
+   commit author.
 
 9. Report: print the new file path and a one-line summary of what was created.
 
