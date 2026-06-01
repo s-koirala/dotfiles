@@ -1,13 +1,13 @@
 ---
 name: meta-analysis
-description: Quantitative synthesis of multiple studies — random-effects (DerSimonian-Laird default; Hartung-Knapp-Sidik-Jonkman correction for small k), fixed-effects, heterogeneity assessment via I² and Cochran's Q, publication-bias diagnostics via funnel plot + Egger test, and forest plot rendering. Pairs with the PRISMA 2020 reporting standard (R3-9 manuscript template); this skill is the analytic engine the PRISMA review uses.
+description: Quantitative synthesis of multiple studies — random-effects (DerSimonian-Laird default; Hartung-Knapp-Sidik-Jonkman correction for small k), fixed-effects, heterogeneity assessment via I² and Cochran's Q, publication-bias diagnostics via funnel plot + Egger test, and forest plot rendering. Aligns with PRISMA 2020 reporting; this skill is the analytic engine for a systematic review.
 ---
 
 # meta-analysis
 
 ## When to invoke
 
-Multiple primary studies report estimates of the same effect AND the goal is a pooled estimate with uncertainty plus assessment of between-study heterogeneity and publication bias. This skill produces the analytic content for a systematic review; the [`manuscript_prisma_TEMPLATE.md`](../../templates/manuscript/manuscript_prisma_TEMPLATE.md) is the report wrapper.
+Multiple primary studies report estimates of the same effect AND the goal is a pooled estimate with uncertainty plus assessment of between-study heterogeneity and publication bias. This skill produces the analytic content for a PRISMA 2020-aligned systematic review.
 
 ## Procedure
 
@@ -96,7 +96,7 @@ Or via [`deliver-results`](../deliver-results/SKILL.md) `save_figure(target='sin
 
 ## Reporting (PRISMA 2020)
 
-Output is consumed by [`manuscript_prisma_TEMPLATE.md`](../../templates/manuscript/manuscript_prisma_TEMPLATE.md). Item-level coverage:
+Output maps to PRISMA 2020 reporting items. Item-level coverage:
 
 - PRISMA item 13(b) (synthesis methods): document model, software, heterogeneity statistic
 - 13(d) (heterogeneity): I², τ², prediction interval

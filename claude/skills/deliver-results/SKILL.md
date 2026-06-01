@@ -14,7 +14,7 @@ Skip for transient EDA — those plots are scratch, not deliverables.
 
 ## Pipeline
 
-1. **Style figures via `skie.mplstyle`** — publication-grade defaults (font cascade, 300 dpi, Okabe-Ito 8-color, perceptually uniform colormaps). Single source of truth for matplotlib rcParams.
+1. **Style figures via `publication.mplstyle`** — publication-grade defaults (font cascade, 300 dpi, Okabe-Ito 8-color, perceptually uniform colormaps). Single source of truth for matplotlib rcParams.
 2. **Save with [save_figure.py](assets/save_figure.py)** — 3-format bundle (PNG@300dpi + SVG + PDF), `target=` keyword selects sizing (single_col / two_col / ppt_full / ppt_half / ppt_quad / print_600). Post-write `pdffonts` check verifies font embedding.
 3. **Compile workbook via [workbook_skeleton.py](assets/workbook_skeleton.py)** — `xlsxwriter` writes the canonical 7-sheet layout: README → parameters → methods → results_* → figures → audit_trail → references. README sheet header captures the 13-field ReproLog envelope (R1-A).
 4. **Render report card** — branches on cwd-rule:
@@ -22,7 +22,7 @@ Skip for transient EDA — those plots are scratch, not deliverables.
    - epi cwd → [report_card_epi.md](assets/report_card_epi.md). YAML frontmatter selects reporting standard (STROBE/CONSORT/STARD/TRIPOD/PRISMA). Sections auto-fillable from `statistical-analysis` output JSON; PRISMA flow diagram externalized to PRISMA2020 Shiny.
 5. **Log ReproLog** — every artifact emission goes through [emit-repro-log](../emit-repro-log/SKILL.md) (R1-A); ReproLog file referenced in commit trailers via R2-A.
 
-## Style parameters (in `skie.mplstyle`)
+## Style parameters (in `publication.mplstyle`)
 
 Every value cites a primary source — no magic numbers. Highlights:
 
@@ -82,8 +82,8 @@ For quant projects: no formal reporting standard. The `report_card_quant.md` tem
 ## Critical compliance pins
 
 - **Sharpe is reporting-only, never optimization target** (per [memory/feedback_sharpe_kpi_only.md](../../memory/feedback_sharpe_kpi_only.md)). The quant report card lists Sharpe as one row in a KPI table without elaboration; CI methodology stays in [rules/quant-project.md](../../rules/quant-project.md), not inlined here.
-- **No magic numbers.** Every figure-size, DPI, font choice, and palette in `skie.mplstyle` has a primary-source citation in this SKILL.md.
-- **Identity hygiene.** Generated artifacts never include real-name metadata; per `rules/publishing.md`, AI-assistance statements emit only the SKIE pseudonym + ICMJE-compliant model+role disclosure.
+- **No magic numbers.** Every figure-size, DPI, font choice, and palette in `publication.mplstyle` has a primary-source citation in this SKILL.md.
+- **Identity hygiene.** Generated artifacts never embed unwanted real-name metadata — strip notebook `kernelspec` / author fields before committing.
 
 ## References
 
@@ -94,4 +94,3 @@ For quant projects: no formal reporting standard. The `report_card_quant.md` tem
 - Pollard, T. J. et al. (2018). "tableone." *JAMIA Open* 1(1):26. https://doi.org/10.1093/jamiaopen/ooy012
 - Iannone, R., Cheng, J., Schloerke, B. *great_tables*. https://posit-dev.github.io/great-tables/
 - Nature artwork guide: https://www.nature.com/documents/nature-final-artwork.pdf
-- ICMJE Recommendations (updated January 2026): https://www.icmje.org/recommendations/

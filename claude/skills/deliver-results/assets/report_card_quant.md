@@ -11,7 +11,6 @@ sidecar_scientific_payload_sha256: <<sha256>>
 git_head_at_authoring: <<short_sha>>
 pip_freeze_sha256: <<sha256>>
 rng_seed: <<int>>
-ai_assistance: claude-opus-4-7 (role=<<idea|code|prose|audit|multi>>; per ICMJE 2026)
 ---
 
 # <<HID>> — <<TITLE>> — disposition memo
@@ -55,7 +54,7 @@ ai_assistance: claude-opus-4-7 (role=<<idea|code|prose|audit|multi>>; per ICMJE 
 
 | KPI | Value | Notes |
 |---|---|---|
-| Terminal-wealth-q05 | <<value>> | Survival-constrained tail; primary promotion gate (SKIE-Universe convention) |
+| Terminal-wealth-q05 | <<value>> | Survival-constrained tail; primary promotion gate |
 | Calmar ratio | <<value>> | Annualized return / \|MaxDD\| |
 | Profit factor | <<value>> | Gross gain / gross loss |
 | R-multiple distribution | <<summary>> | Per-trade reward / risk; pre-cost |
@@ -111,4 +110,4 @@ Rationale: <<2-3 sentences>>
 
 ## 11. Failure log (append-only)
 
-If status = ARCHIVE_NULL or PARKED, append to `research/01_hypothesis_register/<<HID>>/failure_log.md`. Never delete archived hypotheses (non-loss policy per SKIE-Universe ADR-0013-equivalent).
+If status = ARCHIVE_NULL or PARKED, append to `research/01_hypothesis_register/<<HID>>/failure_log.md`. Never delete archived hypotheses — retain them under a non-loss policy.

@@ -98,7 +98,7 @@ def save_figure(
         if ext not in ("png", "svg", "pdf"):
             raise ValueError(f"unsupported format: {ext!r}")
         p = out_dir / f"{slug}.{ext}"
-        # PDF/SVG honor rcParams pdf.fonttype/svg.fonttype set by skie.mplstyle
+        # PDF/SVG honor rcParams pdf.fonttype/svg.fonttype set by publication.mplstyle
         fig.savefig(p, dpi=dpi, bbox_inches="tight")
         paths[ext] = p
 

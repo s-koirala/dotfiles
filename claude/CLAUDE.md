@@ -1,7 +1,7 @@
 # User-Level Directives
 
 ## Role
-Independent researcher. MPH + quant finance. No academic affiliation. GitHub s-koirala. Publishes under pseudonym SKIE.
+Independent quantitative researcher working across finance, population health, and biostatistics.
 
 ## Communication
 - No emojis, filler, hype, soft asks, transitions, CTAs.
@@ -55,7 +55,6 @@ Every bootstrap, backtest, or inference run must log: git HEAD, project-venv `pi
 ## Path-scoped rules (imported)
 @rules/quant-project.md
 @rules/population-health.md
-@rules/publishing.md
 
 Each imported file is loaded verbatim; the LLM self-selects which applies based on the cwd prefix listed at the top of each file.
 

@@ -1,6 +1,6 @@
 # Quant-Project Rules
 
-**Apply when cwd matches any of:** `**/signal-decay-auditor/**`, `**/Futures_ML_Prediction/**`, `**/SKIE_Ninja/**`, `**/SKIE-Ninja/**`, `**/SKIE-Ninja*/**`, `**/SKIE-Universe*/**`, `**/*backtest*/**`, `**/*factor*/**`.
+**Apply when cwd matches any of:** `**/*backtest*/**`, `**/*factor*/**`, `**/*signal*/**`, `**/*alpha*/**`, `**/*quant*/**`. *(Customize these globs to your own quant-project directory names.)*
 
 If cwd does not match, ignore this section entirely.
 

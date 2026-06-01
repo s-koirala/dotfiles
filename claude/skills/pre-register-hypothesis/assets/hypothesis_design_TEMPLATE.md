@@ -16,9 +16,9 @@ external_doi: <<EXTERNAL_DOI>>  # set on R3-2b OSF upload; null/omit for interna
 This document is the pre-registration record for hypothesis {HID}. It is frozen at
 `designed` status; any change after that point requires a new hypothesis ID.
 
-The 11 sections below are ported from SKIE-Universe `docs/templates/hypothesis_design.md`
-(verbatim with link-anchor generalization). Inline commentary cites the conceptual
-anchor that governs the content of each section.
+The 11 sections below follow a standard pre-registration design structure.
+Inline commentary cites the conceptual anchor that governs the content of each
+section.
 
 ## 1. Hypothesis
 

@@ -25,18 +25,18 @@ Spawned in parallel per skill spec (mixed-concern artifact).
 | F-1-1 | quant-auditor | **critical** | §B.7, §C.2 #19 | Sharpe-CI tree reversed Lo vs Opdyke roles | **fixed**: rewrote as assumption-keyed table; IID-Gaussian→textbook; IID-non-Gaussian→Opdyke; serial-dep→Lo or Ledoit-Wolf; pairwise→Ledoit-Wolf; family→White/Hansen |
 | LIT-1 | literature-check | **critical** | [^38] | Bailey-LdP "Sharpe Ratio Efficient Frontier" 2014/J Risk DOI conflates two distinct papers | **fixed**: [^38] now cites Bailey-LdP 2014 *J Portfolio Mgmt* 40(5):94-107 Deflated Sharpe (DOI 10.3905/jpm.2014.40.5.094); note added about distinct 2012 Sharpe Efficient Frontier paper |
 | F-1-2 | quant-auditor | major | §C.2 #24 | E-value scope mismatch (assigned to quant-auditor) | **fixed**: reassigned to new `agents/epi-auditor.md`, cwd-scoped to population-health; Frank 2000 ITCV cited as quant analog |
-| F-1-3 | quant-auditor | major | §A.3 | SKIE-Universe has both `runs/` AND `artifacts/runs/`; claim of "1:1 + rename" wrong | **fixed**: bootstrap emits both; consolidation deferred to per-project ADR |
+| F-1-3 | quant-auditor | major | §A.3 | the upstream library has both `runs/` AND `artifacts/runs/`; claim of "1:1 + rename" wrong | **fixed**: bootstrap emits both; consolidation deferred to per-project ADR |
 | F-1-4 | quant-auditor | major | §A.5 | "No hook changes required" overstated; deps-sha degrades w/o venv | **fixed**: weakened to "hook compatibility holds provided uv sync runs"; `venv_created` field added to manifest |
 | F-1-5 | quant-auditor | major | §0 ↔ §6 | Internal contradiction (top-5 vs round-1) | **fixed**: §0 now references §6 as source of truth; top-5 deleted |
 | F-1-6 | quant-auditor | major | frontmatter | Memo's own repro anchors absent | **fixed**: pip_freeze_sha256, dataset_checksums, rng_seed, model_commit, reporting_standard added (with n/a markers where applicable) |
-| F-1-8 | quant-auditor | major | §0, §A.4 | Magic numbers: Python 3.11 unjustified; "5-occurrence" ≠ CLAUDE.md ">5 times" | **fixed**: Python version now read from SKIE-Universe pyproject at bootstrap time; numba wheel matrix cited; ">5 times" quoted verbatim |
+| F-1-8 | quant-auditor | major | §0, §A.4 | Magic numbers: Python 3.11 unjustified; "5-occurrence" ≠ CLAUDE.md ">5 times" | **fixed**: Python version now read from the upstream library's pyproject at bootstrap time; numba wheel matrix cited; ">5 times" quoted verbatim |
 | F-1-11 | quant-auditor | major | §C.1, §C.2 #20 | leakage-auditor agent redundant with quant-auditor | **fixed**: dropped agent; pit-canary skill invoked by existing quant-auditor |
 | LIT-2 | literature-check | major | §B.3 axes.prop_cycle | tab10/Wong misattribution (tab10 = Tableau-10, not Wong-Okabe-Ito) | **fixed**: replaced tab10 with explicit Okabe-Ito 8-color hex list; Wong [^17] citation retained for the actual palette |
 | LIT-3 | literature-check | major | [^67] | Confirmed duplicate of [^8] | **fixed**: [^67] removed; §C.2 #22 citation changed to [^8] |
 | LIT-4 | literature-check | major | §B.3 pdf.fonttype | "TrueType (Type 42)" terminology imprecise | **fixed**: rephrased as "fonttype=42 yields TrueType embedding; Type 42 is PostScript's TrueType wrapper" |
 | LIT-5 | literature-check | major | [^13] | Nature URL returns 404 | **fixed**: URL corrected to https://www.nature.com/documents/nature-final-artwork.pdf |
 | LIT-6 | literature-check | major | §B.3 savefig.dpi | DPI claim inverted (300=halftone not line-art) | **fixed**: savefig.dpi description corrected to "300 dpi photograph/halftone minimum; 600 dpi for line art / combination figures via `target=print_600`" |
-| F-1-7 | quant-auditor | minor | §C.1 | "24 ADRs" — actually 23 | **fixed**: count corrected with gh api verification note |
+| F-1-7 | quant-auditor | minor | §C.1 | "24 ADRs" — actually 23 | **fixed**: count corrected against the upstream library's ADR directory |
 | F-1-9 | quant-auditor | minor | §C.2 #21 | Politis-Romano vs Politis-White conflation | **fixed**: row title and inline text now distinguish stationary bootstrap (Politis-Romano 1994 [^78]) from automatic block-length selector (Politis-White 2004 [^66]) |
 | F-1-10 | quant-auditor | minor | §C.2 #8 | Schoenfeld 1982 vs Grambsch-Therneau 1994 conflated | **fixed**: now cites both — Grambsch-Therneau [^53] extending Schoenfeld 1982 [^77] |
 | F-1-12 | quant-auditor | minor | §C.2 #7 | power-analysis gate placement inverted (between validate-data and statistical-analysis was wrong) | **fixed**: gate is now pre-register → power-analysis → validate-data → statistical-analysis; Hoenig-Heisey 2001 cited [^76] for retrospective-power caveat |
@@ -86,7 +86,7 @@ User: "Sharpe is arbitrary and archaic. it will only be a KPI for reporting purp
 
 Disposition:
 - §C.2 #19 (Sharpe-CI decision tree inline into statistical-analysis) **DROPPED**. Reason: Sharpe-specific machinery is project-scoped (rules/quant-project.md already covers it), not dotfiles-scoped. Generic time-series CI methodology stays in #18 (HAC bandwidth) and #21 (stationary block bootstrap), applicable to any KPI.
-- §B.7 quant report card: Sharpe demoted to one row in a KPI table (no decision tree); primary promotion gate is now terminal-wealth-q05 + Calmar + profit-factor + R-multiple (per SKIE-Universe README's survival-constrained KPI list).
+- §B.7 quant report card: Sharpe demoted to one row in a KPI table (no decision tree); primary promotion gate is now terminal-wealth-q05 + Calmar + profit-factor + R-multiple (per the upstream library's survival-constrained KPI list).
 - Memory written: [`memory/feedback_sharpe_kpi_only.md`](../../memory/feedback_sharpe_kpi_only.md) — Sharpe is reporting KPI only, never an optimization target.
 - No change to [`rules/quant-project.md`](../../rules/quant-project.md): existing rule already frames Sharpe under "Inference / report bootstrap CI on Sharpe" — i.e., reporting context, consistent with KPI-only treatment.
 
@@ -99,4 +99,4 @@ To re-run this audit:
 2. Re-spawn `quant-auditor` with the same brief (this audit_trail's "Round 1 — auditors" section).
 3. Compare new findings against §1 above. Net-new findings = drift; absent findings = remediation stuck.
 
-The `gh api` calls referenced in the memo (SKIE-Universe tree + selected blob contents) should be hashed at replay time and compared against the `dataset_checksums` frontmatter field of the memo (currently a placeholder; will be populated when `~/.claude` becomes a git repo per pillar A round-0 prerequisite).
+The upstream-library layout/source references in the memo should be re-checked at replay time and compared against the `dataset_checksums` frontmatter field of the memo (currently a placeholder; will be populated when `~/.claude` becomes a git repo per pillar A round-0 prerequisite).

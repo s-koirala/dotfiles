@@ -47,7 +47,7 @@ Project-level multiple-testing family must be tracked explicitly. The family reg
 
 6. **Emit R1-A ReproLog** with `phase=validation`, `hypothesis_id=<HID>`, `rng_seed=<bootstrap seed>`.
 
-7. **Commit via `/commit-with-provenance`** with `--role=audit`.
+7. **Commit via `/commit-with-provenance`**.
 
 ## Fixture: Hansen 2005 Table 1 replay
 

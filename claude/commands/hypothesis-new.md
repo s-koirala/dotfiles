@@ -1,5 +1,5 @@
 ---
-description: Add a new hypothesis to the project's hypothesis_backlog.md with auto-assigned HID. Quant-project workflow per SKIE-Universe convention. Validates citations via CrossRef MCP (R1-B) if available.
+description: Add a new hypothesis to the project's hypothesis_backlog.md with auto-assigned HID. Quant-project workflow. Validates citations via CrossRef MCP if available.
 argument-hint: "<title> [--tier=1|2|3|4|5] [--mechanism-doi=<DOI>] [--notes=<text>]"
 ---
 
@@ -38,17 +38,15 @@ Append a new hypothesis to the project's `hypothesis_backlog.md`. Steps:
 7. **Stage + commit** the backlog edit + new directory via `/commit-with-provenance`:
    ```
    git add hypothesis_backlog.md research/01_hypothesis_register/H<NNN>/
-   /commit-with-provenance "feat(hypothesis): add H<NNN> <title>" --role=idea
+   /commit-with-provenance "feat(hypothesis): add H<NNN> <title>"
    ```
-   The `idea` role is appropriate since this is hypothesis ideation; the implementation comes later.
 
 8. **Report** the new HID, the file paths created, and the next workflow step (`/preregister H<NNN>` once R3-2a lands).
 
-Identity hygiene: per [rules/publishing.md](../rules/publishing.md), do not embed real-name metadata. The git commit author is whatever the local `git config user.email` is — confirm via `git config user.email` before committing.
+Identity hygiene: the git commit author is whatever the local `git config user.email` is — confirm via `git config user.email` before committing; avoid embedding unwanted real-name metadata.
 
 Reproducibility: HID assignment is deterministic given the backlog state at parse time. No randomness. ReproLog emission is delegated to `/commit-with-provenance`.
 
 References:
-- [SKIE-Universe hypothesis_backlog.md](https://github.com/s-koirala/SKIE-Universe/blob/main/hypothesis_backlog.md) — exemplar
 - [CrossRef REST API](https://api.crossref.org/swagger-ui/index.html) — for DOI validation
 - [International DOI Foundation handbook](https://www.doi.org/the-identifier/resources/handbook/)

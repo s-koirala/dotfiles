@@ -48,7 +48,7 @@ R2-B1 ships the CLI + directory tree + manifest emission only. Template renderin
 ## Identity-hygiene
 - `--user-email` is OPTIONAL but strongly recommended for publishing-kind.
 - If neither global git config nor `--user-email` provides identity, the script SKIPS the initial commit with clear remediation instructions. Never makes up a default email.
-- For `~/.claude/` itself (this repo), commits continue to use the no-reply pseudonym email set in R0.
+- For `~/.claude/` itself (this repo), commits continue to use the no-reply email set in R0.
 
 ## Risks / deferred
 - `--migrate` flag is not yet implemented. If bootstrap_script_git_head changes, user must manually delete `manifest.json` to force rebuild. R2-B2 follow-up.

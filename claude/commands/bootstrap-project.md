@@ -1,18 +1,19 @@
 ---
-description: Scaffold a new project directory with SKIE-canonical layout (R2-B1 phase = dir tree + manifest + git init; R2-B2 will add templated CLAUDE.md/README.md/etc). Use whenever starting a new research project.
-argument-hint: "<name> --kind={quant|epi|publishing|generic} [--path=<parent>] [--python-version=X.Y] [--venv] [--user-email=<pseudonym>] [--dry-run] [--rollback-on-fail]"
+description: Scaffold a new project directory with a canonical research layout (dir tree + manifest + git init + templated top-level files). Use whenever starting a new research project.
+argument-hint: "<name> --kind={quant|epi|generic} [--path=<parent>] [--python-version=X.Y] [--venv] [--author=<name>] [--user-email=<email>] [--dry-run] [--rollback-on-fail]"
 ---
 
 Run the bootstrap script with $ARGUMENTS:
 
     python ~/.claude/scripts/bootstrap_project.py $ARGUMENTS
 
-Renders the directory tree, writes `manifest.json`, and renders ~10 top-level files from templates: `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `LICENSE`, `pyproject.toml`, `.gitignore`, `.gitattributes`, `.pre-commit-config.yaml`, `CITATION.cff`, plus kind-specific (`hypothesis_backlog.md` for quant; `docs/protocol/protocol_v0.md` for epi; `manuscript/manuscript.md` + `docs/ai_assistance_statement.md` for publishing).
+Renders the directory tree, writes `manifest.json`, and renders the top-level files from templates: `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `LICENSE`, `pyproject.toml`, `.gitignore`, `.gitattributes`, `.pre-commit-config.yaml`, plus kind-specific (`hypothesis_backlog.md` for quant; `docs/protocol/protocol_v0.md` for epi).
 
 Behavior:
-- Creates `<path>/<name>/` with ~24 base subdirs + kind-conditional extras (e.g. `research/01_hypothesis_register/` for quant, `docs/protocol/` for epi, `manuscript/` for publishing). Both `runs/` AND `artifacts/runs/` are emitted (SKIE-Universe has both as siblings).
+- Creates `<path>/<name>/` with ~24 base subdirs + kind-conditional extras (e.g. `research/01_hypothesis_register/` for quant, `docs/protocol/` for epi). Both `runs/` AND `artifacts/runs/` are emitted (some tooling hard-codes a top-level `runs/`).
 - Writes `manifest.json` at project root: `bootstrap_script_version`, `bootstrap_script_git_head`, `kind`, `rules_file`, `python_version`, `venv_created`, `timestamp_utc`, `subdirs`, `subdir_listing_sha256`, `files: {}`.
-- Resolves `python_version` from SKIE-Universe `pyproject.toml::[project].requires-python` (gh api, cached at `~/.claude/cache/skie_python_version.txt`). Overridable via `--python-version`.
+- Defaults `python_version` to `>=3.11,<3.13`; override via `--python-version`.
+- Identity (`author` / `email` / `github_user`) is read from `config.toml` (copy `config.example.toml`), overridable via `--author` / `--user-email` / `--github-user` flags.
 - If `--venv`: runs `uv venv` in the project root.
 - Calls `git init -b main` and an initial Conventional Commits `chore: bootstrap` commit.
 
@@ -22,8 +23,8 @@ Idempotency:
 - If subdirs are missing, recreates them and updates the manifest.
 
 Identity hygiene:
-- For `--kind=publishing`, pass `--user-email <SKIE-pseudonym-email>`. The script writes it to the new repo's local git config; does NOT modify global git config.
-- Per [rules/publishing.md](../rules/publishing.md), never auto-set the real-name email anywhere.
+- `--user-email` (or `email` in `config.toml`) sets the new repo's LOCAL git config only; the script never modifies global git config.
+- Avoid auto-setting an unwanted real-name email anywhere; prefer the GitHub no-reply form.
 
 Rollback:
 - With `--rollback-on-fail`, if any exception fires AFTER `mkdir` but BEFORE successful completion, the script `shutil.rmtree`s the newly-created project directory. Only operates on a directory created in the current invocation; never deletes a pre-existing tree.

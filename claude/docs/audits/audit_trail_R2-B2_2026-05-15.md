@@ -41,8 +41,8 @@ All templates use `<<KEY>>` syntax consistent with R1-C (CITATION.cff.tmpl) and 
 
 ## Identity hygiene verified
 - `LICENSE.tmpl` defaults to MIT with `<<AUTHOR>>` = local part of `--user-email` (e.g., `s-koirala` from `s-koirala@users.noreply.github.com`).
-- `CITATION.cff` authors list only `SKIE` pseudonym (inherited from R1-C template).
-- `manuscript.md.tmpl` author line lists only `SKIE (pseudonym)`.
+- `CITATION.cff` authors list only the author's publishing identity (inherited from R1-C template).
+- `manuscript.md.tmpl` author line lists only the author's publishing identity.
 - No real-name strings in any template; verified via grep across all 12 templates.
 
 ## Edge cases handled

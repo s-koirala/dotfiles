@@ -96,7 +96,7 @@ This ordering matters: power analysis informs whether n is adequate for the regi
    - `rng_seed = <pre-registered seed from design.md §11>`
    - `config_resolved_sha256 = <SHA of the power_analysis_{date}.md file>`
 
-6. **Commit via `/commit-with-provenance`** with `--role=audit` (power analysis is design-time audit of the pre-reg's adequacy).
+6. **Commit via `/commit-with-provenance`** (power analysis is a design-time audit of the pre-reg's adequacy).
 
 ## Magic-numbers enforcement
 

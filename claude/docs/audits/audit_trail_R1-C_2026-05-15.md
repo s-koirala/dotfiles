@@ -35,8 +35,8 @@ exit_reason: 4 verification gates passed; subagent audit deferred (functional pa
 - `/cite-add` appears in the available-skills list immediately on file write.
 
 ## Identity hygiene
-- Template lists only `name: SKIE` (pseudonym) in `authors`.
-- ORCID line commented; uncomment only if pseudonym-bound.
+- Template lists only the author's publishing identity in `authors` (placeholder, no real name).
+- ORCID line commented; uncomment only if bound to the publishing identity.
 - No real-name fields present.
 
 ## Deferred follow-ups

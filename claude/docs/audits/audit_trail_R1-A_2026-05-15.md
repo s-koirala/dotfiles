@@ -18,7 +18,7 @@ exit_reason: 0 critical + 0 major + 2 minor (both fixed); verdict exit-loop
 - `~/.claude/skills/emit-repro-log/assets/emit_repro_log.py` (~9 KB; self-contained port)
 
 ## Source-of-truth
-SKIE-Universe `src/skie_ninja/utils/reproducibility.py` blob SHA-1 `3f90d557bed13ccfd3e362077e5b40ae06ebd084` (gh api 2026-05-15). Schema `$comment` embeds the same SHA-1 for drift detection.
+The upstream library's reproducibility module (`utils/reproducibility.py`). Schema `$comment` embeds the source-file content hash for drift detection.
 
 ## Pre-audit gates (all passed)
 1. **Schema validity:** `jsonschema.Draft202012Validator.check_schema(...)` — PASS
@@ -27,7 +27,7 @@ SKIE-Universe `src/skie_ninja/utils/reproducibility.py` blob SHA-1 `3f90d557bed1
    - 13 fields present (matches expected set exactly)
    - `pip_freeze_sha256` = 64 hex chars
    - `host` = `{os, python, cpu}` (3 keys)
-3. **Drift check:** schema `required` field set == SKIE-Universe `ReproLog` dataclass field set (parsed via regex from gh-api fetched source) — PASS
+3. **Drift check:** schema `required` field set == upstream library's `ReproLog` dataclass field set — PASS
 
 ## Auditor: reproducibility-verifier
 
