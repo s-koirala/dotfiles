@@ -21,7 +21,7 @@ import platform
 import subprocess
 import sys
 import tempfile
-from dataclasses import asdict, dataclass, field, replace
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 

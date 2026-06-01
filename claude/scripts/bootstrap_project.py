@@ -50,7 +50,7 @@ import tempfile
 from pathlib import Path, PurePosixPath
 
 _SCRIPT_VERSION = "0.2.0"  # SemVer 2.0.0; bump on template or layout change
-# 0.2.0: R2-B2 — added template rendering (12 .tmpl files)
+# 0.2.0: R2-B2 — added template rendering
 # 0.1.0: R2-B1 — initial CLI + dir tree + manifest
 
 # Bootstrap template source dir (relative to this script)
@@ -150,9 +150,9 @@ def load_identity(cli_author: str | None = None,
                   cli_github_user: str | None = None) -> dict[str, str]:
     """Resolve bootstrap identity for emitted projects.
 
-    Precedence: CLI flag > config.toml > environment > interactive prompt
-    (TTY only) > placeholder default. config.toml is gitignored; copy
-    config.example.toml and set your values once.
+    Precedence (highest first): CLI flag > environment var > config.toml >
+    interactive prompt (TTY only) > placeholder default. config.toml is
+    gitignored; copy config.example.toml and set your values once.
     """
     vals = dict(_IDENTITY_DEFAULTS)
     if _CONFIG_PATH.exists():
@@ -315,7 +315,7 @@ def render_all_templates(
     date = dt.date.today().isoformat()
     year = str(dt.date.today().year)
     rules_file = _KIND_RULES[kind] or "(none — generic kind)"
-    license_id = "MIT"  # default SPDX; override per project
+    license_id = "MIT"  # default SPDX license
 
     scope_text = {
         "quant": "Quant research project. Hypothesis-driven; pre-registered design.md per hypothesis; "
@@ -345,9 +345,6 @@ def render_all_templates(
         "REPORTING_STANDARD": reporting_standard,
         "DOTFILES": str(Path.home() / ".claude").replace("\\", "/"),
         "HYPOTHESIS_ROWS": "| H001 | 1 | <<TODO>> | designed | <<DOI>> | seed hypothesis |",
-        "MODEL_ID": "claude-opus-4-7",
-        "MODEL_VERSION": "claude-opus-4-7",
-        "ROLE": "<<TODO: idea | code | prose | audit | multi>>",
     }
 
     file_shas: dict[str, str] = {}
@@ -486,12 +483,12 @@ def git_init_and_commit(project_root: Path, kind: str, script_head: str,
             or name_r.returncode != 0 or not name_r.stdout.strip():
         print("WARN: git user.email / user.name not configured. Initial commit "
               "skipped.", file=sys.stderr)
-        print(f"  Configure with:", file=sys.stderr)
+        print("  Configure with:", file=sys.stderr)
         print(f"    git -C {project_root} config --local user.email <your-email>",
               file=sys.stderr)
         print(f"    git -C {project_root} config --local user.name '<Your Name>'",
               file=sys.stderr)
-        print(f"  Then run:", file=sys.stderr)
+        print("  Then run:", file=sys.stderr)
         print(f"    git -C {project_root} add . && git -C {project_root} commit "
               f"-m 'chore: bootstrap {project_root.name} ({kind})'",
               file=sys.stderr)

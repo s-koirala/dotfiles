@@ -91,6 +91,7 @@ For quant projects: no formal reporting standard. The `report_card_quant.md` tem
 - Nuñez, J. R., Anderton, C. R., Renslow, R. S. (2018). "Optimizing colormaps with consideration for color vision deficiency." *PLoS One* 13:e0199239. https://doi.org/10.1371/journal.pone.0199239
 - Crameri, F. et al. (2020). "The misuse of colour in science communication." *Nat Commun* 11:5444. https://doi.org/10.1038/s41467-020-19160-7
 - Kovesi, P. (2015). "Good Colour Maps: How to Design Them." arXiv:1509.03700.
+- van der Walt, S., & Smith, N. (2015). "A Better Default Colormap for Matplotlib" (viridis), SciPy 2015. https://bids.github.io/colormap/
 - Pollard, T. J. et al. (2018). "tableone." *JAMIA Open* 1(1):26. https://doi.org/10.1093/jamiaopen/ooy012
 - Iannone, R., Cheng, J., Schloerke, B. *great_tables*. https://posit-dev.github.io/great-tables/
 - Nature artwork guide: https://www.nature.com/documents/nature-final-artwork.pdf
