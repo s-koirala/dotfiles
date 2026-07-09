@@ -8,9 +8,12 @@ not covered by domain skills here (use base Claude Code capability for that).
 See the top-level [README](../README.md) for the per-domain scope breakdown
 and the cwd-glob rule activation table. This file is the installation procedure.
 
-Deploys 14 skills, 8 slash commands, 7 agents, 7 hooks, 4 scripts, and 15
-templates (5 in `templates/` + 10 in `scripts/bootstrap_templates/`) into
-`~/.claude/` on Windows, macOS, or Linux via an idempotent Python script.
+Deploys 14 skills, 8 slash commands, 7 agents, 7 hooks, 1 workflow, and ships
+4 scripts plus 17 templates (7 in `templates/` + 10 in
+`scripts/bootstrap_templates/`) into `~/.claude/` on Windows, macOS, or Linux
+via an idempotent Python script (scripts and templates are repo-side content;
+deploy.py manages agents/skills/commands/rules/hooks/workflows +
+CLAUDE.md + settings.json).
 
 ## How to use this guide
 
@@ -139,8 +142,8 @@ This is a template you fork. Two one-time steps make generated output yours:
 ## Verification (after deploy)
 
 ```bash
-ls ~/.claude/{skills,agents,commands,hooks,rules}
-# Expect: 14 skills/, 7 agents/, 8 commands/, 7 hooks/, 2 rules/
+ls ~/.claude/{skills,agents,commands,hooks,rules,workflows}
+# Expect: 14 skills/, 7 agents/, 8 commands/, 7 hooks/, 2 rules/, 1 workflows/ script
 
 grep -c "{{CLAUDE_HOME}}" ~/.claude/settings.json    # 0 required
 ```
