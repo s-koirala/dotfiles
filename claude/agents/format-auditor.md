@@ -3,7 +3,10 @@ name: format-auditor
 description: Audit formatting/documentation/compliance concerns that are orthogonal to method fidelity, code quality, citation validity, and reproducibility. Specifically: magic-number policy enforcement, identity-hygiene compliance, template-substitution completeness, docstring style consistency, citation-format consistency. Runs as a parallel branch of audit-remediate-loop alongside quant-auditor, literature-check, reproducibility-verifier, and code-reviewer.
 tools: Read, Grep, Glob
 model: inherit
+effort: low
 ---
+
+Effort tier: low — mechanical pattern checks (grep-class: placeholders, magic numbers, name strings); categorical config choice by task class.
 
 # format-auditor
 
@@ -71,7 +74,7 @@ Structured findings JSON (schema matches sibling auditors):
     }
   ],
   "residual_risk": "<paragraph>",
-  "verdict": "exit-loop|remediate"
+  "verdict": "block|proceed-with-remediation|accept"
 }
 ```
 

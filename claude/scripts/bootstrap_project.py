@@ -236,7 +236,9 @@ def atomic_write_json(path: Path, payload: dict) -> Path:
     tmp_path = Path(tmp.name)
     try:
         try:
-            tmp.write(data); tmp.flush(); os.fsync(tmp.fileno())
+            tmp.write(data)
+            tmp.flush()
+            os.fsync(tmp.fileno())
         finally:
             tmp.close()
         os.replace(tmp_path, path)
@@ -293,8 +295,14 @@ def template_files_for(kind: str) -> list[tuple[str, str]]:
     ]
     if kind == "quant":
         always.append(("hypothesis_backlog.md.tmpl", "hypothesis_backlog.md"))
+        # REVIEW.md for cloud review; resolves via the shared-templates
+        # fallback to templates/REVIEW_quant.md (no <<KEY>> placeholders).
+        always.append(("REVIEW_quant.md.tmpl", "REVIEW.md"))
     elif kind == "epi":
         always.append(("protocol_v0.md.tmpl", "docs/protocol/protocol_v0.md"))
+        # REVIEW.md for cloud review; resolves via the shared-templates
+        # fallback to templates/REVIEW_epi.md (no <<KEY>> placeholders).
+        always.append(("REVIEW_epi.md.tmpl", "REVIEW.md"))
     return always
 
 

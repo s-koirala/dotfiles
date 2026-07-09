@@ -3,13 +3,16 @@ name: dag-drafter
 description: Draft a directed acyclic graph (DAG) in dagitty syntax from a prose causal description. Identifies the minimal back-door adjustment set per Pearl 2009 §3.3. Output goes to docs/protocol/dag_{slug}_{date}.dag plus a rendered SVG. Cwd-scoped to population-health projects (rules/population-health.md).
 tools: Read, Grep, Glob, Write, WebFetch
 model: inherit
+effort: medium
 ---
+
+Effort tier: medium — generative drafting with a formal criterion check, not open-ended verification; categorical config choice by task class.
 
 # dag-drafter
 
 ## Scope
 
-Cwd-scoped to projects matching the `rules/population-health.md` glob set (`**/PCP*Crisis/**`, `**/Infectious_Disease*/**`, `**/Ultrasound/**`, `**/epidemiolog*/**`). The rule mandates: "Declare DAG (dagitty or text) before adjustment-set selection."
+Cwd-scoped to projects matching the `rules/population-health.md` glob set (`**/*epidemiolog*/**`, `**/*cohort*/**`, `**/*clinical*/**`, `**/*biostat*/**`, `**/*public-health*/**`). The rule mandates: "Declare DAG (dagitty or text) before adjustment-set selection."
 
 For quant projects, the analog is omitted-variable robustness via Frank 2000 ITCV — handled separately, not by this agent.
 

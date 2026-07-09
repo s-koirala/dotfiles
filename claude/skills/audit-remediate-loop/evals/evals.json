@@ -1,0 +1,106 @@
+[
+  {
+    "id": "E1",
+    "type": "defect",
+    "fixture": "fixtures/e1_lookahead_leak.py",
+    "defect_class": "look-ahead leak",
+    "ground_truth": {
+      "location": "fixtures/e1_lookahead_leak.py:17",
+      "expected_severity": "critical",
+      "expected_branch": ["quant-auditor"],
+      "note": "rolling(window=20, center=True) makes the volatility feature at time t depend on observations after t; violates rules/quant-project.md no-look-ahead. Fixture is otherwise clean (seeded RNG, real citation)."
+    },
+    "assertion": "The audit loop reports a critical or major finding identifying the centered rolling window as a look-ahead leak, and the finding survives the refute gate."
+  },
+  {
+    "id": "E2",
+    "type": "defect",
+    "fixture": "fixtures/e2_hac_lag.py",
+    "defect_class": "wrong HAC lag justification",
+    "ground_truth": {
+      "location": "fixtures/e2_hac_lag.py:16",
+      "expected_severity": "major",
+      "expected_branch": ["quant-auditor"],
+      "note": "maxlags=4 is hardcoded while the justify comment (lines 14-15) cites the Newey & West (1994) data-dependent bandwidth rule, which would compute the lag from the data; the citation does not justify the constant. Fixture is otherwise clean."
+    },
+    "assertion": "The audit loop reports a finding that the hardcoded HAC lag contradicts the cited data-dependent selection rule, and the finding survives the refute gate."
+  },
+  {
+    "id": "E3",
+    "type": "defect",
+    "fixture": "fixtures/e3_fabricated_citation.md",
+    "defect_class": "fabricated citation",
+    "ground_truth": {
+      "location": "fixtures/e3_fabricated_citation.md:11",
+      "expected_severity": "critical",
+      "expected_branch": ["literature-check"],
+      "note": "doi 10.5555/quant.2019.0042 is fabricated: 10.5555 is the reserved example DOI prefix, and the DOI returned HTTP 404 from doi.org on 2026-07-09. The Newey & West (1994) citation on line 8 is real and correctly attributed."
+    },
+    "assertion": "The audit loop reports a finding that the Ferreira & Nakamura (2019) DOI does not resolve to any publication, without flagging the real Newey & West (1994) citation, and the finding survives the refute gate."
+  },
+  {
+    "id": "E4",
+    "type": "defect",
+    "fixture": "fixtures/e4_missing_seed.py",
+    "defect_class": "missing seed",
+    "ground_truth": {
+      "location": "fixtures/e4_missing_seed.py:14",
+      "expected_severity": "major",
+      "expected_branch": ["reproducibility-verifier"],
+      "note": "np.random.default_rng() is unseeded while REPRO_LOG (lines 8-12) claims rng_seed=20260709 was logged for the run; the provenance claim is false and the bootstrap is not replayable. Fixture is otherwise clean (n_boot justified with citation)."
+    },
+    "assertion": "The audit loop reports a finding that the RNG is unseeded despite the ReproLog seed claim, and the finding survives the refute gate."
+  },
+  {
+    "id": "E5",
+    "type": "defect",
+    "fixture": "fixtures/e5_magic_threshold.py",
+    "defect_class": "magic number",
+    "ground_truth": {
+      "location": "fixtures/e5_magic_threshold.py:13",
+      "expected_severity": "major",
+      "expected_branch": ["format-auditor"],
+      "note": "threshold = 0.7 is the deliberately seeded defect: an unexplained tunable constant on a production path with no empirical justification (no grid/CV/bootstrap/citation), violating CLAUDE.md zero-arbitrary-thresholds. The fixture body intentionally carries no justify annotation on this line; this registry entry is the only place the defect is annotated."
+    },
+    "assertion": "The audit loop reports a finding that threshold = 0.7 lacks empirical justification, and the finding survives the refute gate."
+  },
+  {
+    "id": "E6",
+    "type": "defect",
+    "fixture": "fixtures/e6_split_off_by_one.py",
+    "defect_class": "off-by-one split overlap",
+    "ground_truth": {
+      "location": "fixtures/e6_split_off_by_one.py:14-15",
+      "expected_severity": "major",
+      "expected_branch": ["quant-auditor", "code-reviewer"],
+      "note": "train = log_ret[: t + 1] and test = log_ret[t:] both include the observation at index t; the splits are not disjoint, violating rules/quant-project.md time-ordered disjoint splits. Any one listed branch detecting it scores as a pass."
+    },
+    "assertion": "The audit loop reports a finding that the observation at the split boundary t appears in both train and test, and the finding survives the refute gate."
+  },
+  {
+    "id": "C1",
+    "type": "clean",
+    "fixture": "fixtures/c1_clean_quant.py",
+    "ground_truth": {
+      "location": null,
+      "expected_severity": "none",
+      "expected_branch": null,
+      "expected_findings_post_gate": 0,
+      "note": "Clean control: seeded RNG, real citation (Jegadeesh & Titman 1993), lagged feature with no look-ahead, time-ordered disjoint walk-forward split. Any raw critical/major finding should be killed at the refute gate."
+    },
+    "assertion": "The audit loop reports zero critical or major findings after the refute gate; raw (pre-gate) finding count is recorded for the false-positive metric."
+  },
+  {
+    "id": "C2",
+    "type": "clean",
+    "fixture": "fixtures/c2_clean_epi.md",
+    "ground_truth": {
+      "location": null,
+      "expected_severity": "none",
+      "expected_branch": null,
+      "expected_findings_post_gate": 0,
+      "note": "Clean control: both DOIs are real and correctly attributed (VanderWeele & Ding 2017 doi 10.7326/M16-2607; White, Royston & Wood 2011 doi 10.1002/sim.4067), MAR assumption declared with evidence, complete-case relegated to sensitivity per rules/population-health.md."
+    },
+    "assertion": "The audit loop reports zero critical or major findings after the refute gate; raw (pre-gate) finding count is recorded for the false-positive metric."
+  }
+]

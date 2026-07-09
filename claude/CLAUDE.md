@@ -37,7 +37,7 @@ Independent quantitative researcher working across finance, population health, a
 5. Update documentation.
 
 ## Agentic Iteration (default pattern)
-Invoke the `audit-remediate-loop` skill for any non-trivial task. Cap iterations at 3 rounds — multi-agent self-consistency gains taper at moderate sample counts ([arXiv 2511.00751](https://arxiv.org/abs/2511.00751)); 3 is an operational choice balancing coverage against cost.
+Invoke the `audit-remediate-loop` skill for any non-trivial task. Primary mechanism: the Workflow engine script [workflows/audit-remediate.js](workflows/audit-remediate.js) (deterministic routing, parallel specialist auditors, schema-validated findings); the skill routes to it and carries the parallel-Agent fallback for harnesses without the Workflow tool. Every critical/major finding passes an adversarial refute gate before remediation — drop requires concrete counter-evidence, never bare disagreement ([arXiv 2604.19049](https://arxiv.org/abs/2604.19049)). Cap iterations at 3 rounds — single-model self-consistency gains taper at moderate sample counts ([arXiv 2511.00751](https://arxiv.org/abs/2511.00751)), extrapolated to audit rounds; 3 is an operational choice balancing coverage against cost. Supporting evidence: external auditors over self-review ([arXiv 2606.05976](https://arxiv.org/abs/2606.05976)), multi-agent round-degradation via sycophancy ([arXiv 2509.05396](https://arxiv.org/abs/2509.05396)), specialist diversity as a dominant success driver ([arXiv 2511.07784](https://arxiv.org/abs/2511.07784)).
 
 ## Output Placement & Naming
 - Artifacts go in existing project subfolders. Do not create new top-level dirs without reason.

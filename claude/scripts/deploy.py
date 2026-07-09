@@ -24,7 +24,6 @@ import json
 import os
 import platform
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -32,7 +31,7 @@ from pathlib import Path
 SRC = Path(__file__).resolve().parent.parent  # ~/dotfiles/claude
 DEST = Path.home() / ".claude"
 
-MANAGED_DIRS = ["agents", "skills", "commands", "rules", "hooks"]
+MANAGED_DIRS = ["agents", "skills", "commands", "rules", "hooks", "workflows"]
 MANAGED_FILES = ["CLAUDE.md"]  # settings.json handled specially
 SPECIAL_FILES = ["settings.json"]
 
@@ -186,7 +185,7 @@ def assert_no_managed_in_protected() -> None:
 def maybe_init_local() -> bool:
     local = DEST / "settings.local.json"
     if local.exists():
-        print(f"settings.local.json already exists — left untouched")
+        print("settings.local.json already exists — left untouched")
         return False
     local.write_text(json.dumps(LOCAL_TEMPLATE, indent=2) + "\n", encoding="utf-8")
     print(f"scaffolded {local}")

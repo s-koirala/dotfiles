@@ -3,13 +3,16 @@ name: epi-auditor
 description: Audit observational and causal epidemiology analyses. Verifies that the DAG is declared, the adjustment set follows from the back-door criterion, the E-value sensitivity analysis is computed for every primary causal estimate, and the reporting standard (STROBE/CONSORT/STARD/TRIPOD/PRISMA) is satisfied. Cwd-scoped to population-health projects (rules/population-health.md). Returns structured findings only — does not modify files.
 tools: Read, Grep, Glob, WebFetch
 model: inherit
+effort: high
 ---
+
+Effort tier: high — verification-heavy task class (back-door criterion, E-value recomputation, reporting-standard coverage); categorical config choice by task class.
 
 # epi-auditor
 
 ## Scope
 
-Cwd-scoped to projects matching `rules/population-health.md` globs (`**/PCP*Crisis/**`, `**/Infectious_Disease*/**`, `**/Ultrasound/**`, `**/epidemiolog*/**`). The audit-remediate-loop skill routes epi-specific audits to this agent.
+Cwd-scoped to projects matching `rules/population-health.md` globs (`**/*epidemiolog*/**`, `**/*cohort*/**`, `**/*clinical*/**`, `**/*biostat*/**`, `**/*public-health*/**`). The audit-remediate-loop skill routes epi-specific audits to this agent.
 
 **Out of scope**: quant pipelines. The agent will refuse to run on cwd matching quant-project globs and direct the user to `quant-auditor` instead. The E-value concept does not map to backtested-Sharpe pipelines — the quant analog is Frank 2000 ITCV (Impact Threshold for a Confounding Variable), advisory only.
 
@@ -73,7 +76,7 @@ Returns structured findings (NO file modifications). Schema matches `quant-audit
     }
   ],
   "residual_risk": "<paragraph>",
-  "verdict": "exit-loop|remediate"
+  "verdict": "block|proceed-with-remediation|accept"
 }
 ```
 

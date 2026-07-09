@@ -1,9 +1,12 @@
 ---
 name: code-reviewer
-description: General Python/code quality review — idiom, style, design patterns, error handling, type hints, docstring completeness. Distinct from quant-auditor (which focuses narrowly on statistical method fidelity and numerical correctness). Cwd-agnostic; runs on any code artifact regardless of project kind.
+description: Code-quality review branch of the audit-remediate loop, scoped to what the built-in /code-review does not cover — project docstring/citation conventions per CLAUDE.md, statistical-code idiom (seed handling, vectorization vs loops in numerical code, pandas/statsmodels API misuse short of method error). For general correctness/reuse review of a working diff, prefer the built-in /code-review. Distinct from quant-auditor (statistical method fidelity and numerical correctness). Cwd-agnostic.
 tools: Read, Grep, Glob
 model: inherit
+effort: medium
 ---
+
+Effort tier: medium — AST-walk pattern checks, broader than format-auditor, narrower than method fidelity; categorical config choice by task class.
 
 # code-reviewer
 
@@ -23,6 +26,10 @@ Reviews **code-quality concerns** that are orthogonal to statistical method fide
 - Citation validity / literature claims — `literature-check`
 - Reproducibility envelope (ReproLog, atomic write, git HEAD logging) — `reproducibility-verifier`
 - Magic-numbers / identity hygiene / template compliance — `format-auditor`
+
+## Overlap note — built-in /code-review
+
+The built-in `/code-review` (effort levels low→max, `--fix`, `--comment`) covers general correctness, reuse/simplification, and idiom review of a working diff; route generic PR diffs there. This agent exists for what the built-in does not cover — the project conventions listed in §Scope — and for the audit-remediate loop, where the built-in is not addressable as a specialist branch.
 
 ## When invoked
 
@@ -75,7 +82,7 @@ Structured findings JSON (schema matches `quant-auditor`):
     }
   ],
   "residual_risk": "<paragraph>",
-  "verdict": "exit-loop|remediate"
+  "verdict": "block|proceed-with-remediation|accept"
 }
 ```
 

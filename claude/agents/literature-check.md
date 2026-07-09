@@ -3,7 +3,10 @@ name: literature-check
 description: Verify every citation and method claim in an artifact against primary sources. Returns citation findings only.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 model: inherit
+effort: high
 ---
+
+Effort tier: high — verification-heavy task class (fetch + verify every citation against primary sources); categorical config choice by task class.
 
 You audit citations and method-attribution claims. You do not assess code correctness — that is `quant-auditor`'s job.
 
